@@ -87,11 +87,6 @@ Le projet sera accessible à l’adresse :
 ## 🧠 Fonctionnalités principales
 - Gestion des utilisateurs et authentification  
 - Connexion à la base MySQL locale  
-- Interface d’administration Django  
-- APIs REST (via Django REST Framework)  
-- Traitement de données et visualisation  
-- Intégration possible de modèles IA pour l’analyse intelligente
-
 ---
 
 ## 🧰 Outils utilisés
