@@ -1,0 +1,567 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - stat</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{% static 'rouibapp/statistiques.js' %}"></script>
+
+    <style>
+       body {
+            background: url("{% static 'rouibapp/back.png' %}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+        .main-content {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .content-body {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .date-form .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(34%) sepia(98%) saturate(747%) hue-rotate(184deg) brightness(92%) contrast(92%);
+        }
+        .date-form .btn-primary {
+            background: linear-gradient(135deg, #FF8C42, #FF6B35);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .date-form .btn-primary:hover {
+            background: linear-gradient(135deg, #FF6B35, #FF5722);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+        .btn-outline-secondary {
+            background: linear-gradient(135deg, #FF8C42, #FF6B35);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-secondary:hover {
+            background: linear-gradient(135deg,  #FF6B35, #FF5722);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+        #arretPieChart {
+            display: block;
+            margin-left: 0;
+            margin-right: auto;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <button class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-left" id="toggleIcon"></i>
+    </button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" 
+                alt="Logo Rouiba" 
+                class="logo-rouiba">
+            <small>Panel d'administration</small>
+        </div>
+        
+        <ul class="nav-menu">
+            <li>
+                <a href="{% url 'home' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'statistiques' %}" class="active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'equipe' %}">
+                    <i class="fas fa-users"></i>
+                    <span>Équipes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)">
+                    <i class="fas fa-box"></i>
+                    <span>Produits</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{% url 'carton' %}"><span>Carton</span></a></li>
+                    <li><a href="{% url 'PET' %}"><span>PET</span></a></li>
+                </ul>
+            </li>
+           
+                        
+          
+           
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- Main content -->
+    <div class="main-content" id="mainContent">
+       <div class="content-header" >
+            <img src="{% static 'rouibapp/jus.png' %}" alt="Jus" class="header-img">
+        </div>
+        <form method="get" class="date-form" style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+            <label for="date" style="font-weight: bold; font-size: 16px; margin-right: 8px;">
+                Sélectionnez une date :
+            </label>
+            <input type="date" id="date" name="date" value="{{ date|default_if_none:'' }}"
+                class="form-control"
+                style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 16px;">
+            <button type="submit" class="btn btn-primary" style="padding: 6px 18px; border-radius: 6px; font-size: 16px;">
+                Afficher
+            </button>
+        </form>
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'statistiques_pet' %}">
+                <button type="button" class="btn btn-outline-secondary" id="toggleTableBtn">
+                    <i class="fas fa-table"></i> Afficher les statistiques Pet
+                </button>
+            </a>
+
+        </div>
+        <div class="content-body">
+            <h1>Statistiques Carton</h1>
+            <div class="stats-container"></div>
+            <div class="stat-card" style="margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 350px;">
+                <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Réalisé et TRS% par Équipe</h3>
+                <canvas id="equipeHistogram" width="700" height="300" style="margin: 0 auto; display: block;"></canvas>
+            </div>
+            <div style="display: flex; gap: 30px; margin-bottom: 30px;">
+                <div class="stat-card" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 350px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px;">
+                    <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Temps d'arrêt par Type</h3>
+                    <canvas id="arretPieChart" width="250" height="250" style="margin: 0 auto; display: block;"></canvas>
+                </div>
+                <div class="stat-card" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 350px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px;">
+                    <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Temps Productif / Temps d'Arrêt par Équipe</h3>
+                    <canvas id="stackedEquipeHistogram" width="250" height="250"></canvas>
+                </div>
+            </div>
+            <div style="display: flex; gap: 30px; margin-bottom: 30px;">
+                <div class="stat-card" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px;">
+                    <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Temps d'Arrêt par Équipe et Type</h3>
+                    <canvas id="groupedArretHistogram" width="350" height="300"></canvas>
+                </div>
+                <div class="stat-card" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px;">
+                    <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Temps d'Arrêt par Équipe et Responsable</h3>
+                    <canvas id="groupedArretResponsableHistogram" width="350" height="300"></canvas>
+                </div>
+            </div>
+            <div class="stat-card" style="margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 350px;">
+                <h3 style="font-size: 18px; color: #2C3E50; margin-bottom: 20px;">Réalisé et Perte % par Équipe</h3>
+                <canvas id="equipeRealisePerteHistogram" width="700" height="300" style="margin: 0 auto; display: block;"></canvas>
+            </div>
+
+        </div>
+    </div>
+   
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Palette de couleurs professionnelle pour industrie de jus
+        const mainColors = {
+            primary: '#FF8C42',    // Orange jus principal
+            secondary: '#4ECDC4',  // Turquoise frais
+            success: '#45B7D1',    // Bleu ciel
+            warning: '#FFA726',    // Orange clair
+            danger: '#EF5350',     // Rouge moderne
+            info: '#42A5F5',       // Bleu info
+            dark: '#2C3E50',       // Bleu foncé professionnel
+            light: '#ECF0F1'       // Gris clair
+        };
+
+        const gradientColors = [
+            'linear-gradient(135deg, #FF8C42, #FF6B35)',
+            'linear-gradient(135deg, #4ECDC4, #44A08D)',
+            'linear-gradient(135deg, #45B7D1, #3498DB)',
+            'linear-gradient(135deg, #FFA726, #FF9800)',
+            'linear-gradient(135deg, #EF5350, #E53935)',
+            'linear-gradient(135deg, #42A5F5, #2196F3)',
+            'linear-gradient(135deg, #66BB6A, #4CAF50)',
+            'linear-gradient(135deg, #AB47BC, #9C27B0)'
+        ];
+
+        const solidColors = [
+            '#FF8C42', '#4ECDC4', '#45B7D1', '#FFA726', 
+            '#EF5350', '#42A5F5', '#66BB6A', '#AB47BC',
+            '#FF7043', '#26A69A', '#5C6BC0', '#FFCA28'
+        ];
+
+        // Histogramme des réalisés et TRS% par équipe
+        const equipeLabels = {{ equipe_labels|safe }};
+        const realiseValues = {{ realise_values|safe }};
+        const trsValues = {{ trs_values|safe }};
+        
+        const ctx = document.getElementById('equipeHistogram').getContext('2d');
+        const gradient1 = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient1.addColorStop(0, '#FF8C42');
+        gradient1.addColorStop(1, 'rgba(255, 140, 66, 0.6)');
+        
+        const gradient2 = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient2.addColorStop(0, '#4ECDC4');
+        gradient2.addColorStop(1, 'rgba(78, 205, 196, 0.6)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: equipeLabels,
+                datasets: [
+                    {
+                        label: 'Réalisé',
+                        data: realiseValues,
+                        backgroundColor: gradient1,
+                        borderColor: '#FF6B35',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'TRS %',
+                        data: trsValues,
+                        backgroundColor: gradient2,
+                        borderColor: '#44A08D',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 12, weight: 'bold' },
+                            color: '#2C3E50'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        position: 'left',
+                        title: { display: true, text: 'Réalisé', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(44, 62, 80, 0.1)' },
+                        ticks: { color: '#2C3E50' }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: { display: true, text: 'TRS %', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { display: false },
+                        ticks: { color: '#2C3E50' }
+                    },
+                    x: {
+                        ticks: { color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Camembert des temps d'arrêt par type
+        const typeLabels = {{ type_labels|safe }};
+        const arretValues = {{ arret_values|safe }};
+        
+        const pieCtx = document.getElementById('arretPieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: typeLabels,
+                datasets: [{
+                    data: arretValues,
+                    backgroundColor: solidColors,
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 11, weight: 'bold' },
+                            color: '#2C3E50',
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // Histogramme empilé des temps productifs et d'arrêt par équipe
+        const equipeLabelsStacked = {{ equipe_labels|safe }};
+        const tempsProductif = {{ temps_productif|safe }};
+        const tempsArret = {{ temps_arret|safe }};
+        
+        const stackedCtx = document.getElementById('stackedEquipeHistogram').getContext('2d');
+        const gradientProductif = stackedCtx.createLinearGradient(0, 0, 0, 300);
+        gradientProductif.addColorStop(0, '#45B7D1');
+        gradientProductif.addColorStop(1, 'rgba(69, 183, 209, 0.7)');
+        
+        const gradientArret = stackedCtx.createLinearGradient(0, 0, 0, 300);
+        gradientArret.addColorStop(0, '#EF5350');
+        gradientArret.addColorStop(1, 'rgba(239, 83, 80, 0.7)');
+
+        new Chart(stackedCtx, {
+            type: 'bar',
+            data: {
+                labels: equipeLabelsStacked,
+                datasets: [
+                    {
+                        label: 'Temps productif (min)',
+                        data: tempsProductif,
+                        backgroundColor: gradientProductif,
+                        borderColor: '#3498DB',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    },
+                    {
+                        label: "Temps d'arrêt (min)",
+                        data: tempsArret,
+                        backgroundColor: gradientArret,
+                        borderColor: '#E53935',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 11, weight: 'bold' },
+                            color: '#2C3E50'
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        stacked: true,
+                        ticks: { color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    },
+                    y: { 
+                        stacked: true, 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Minutes', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(44, 62, 80, 0.1)' },
+                        ticks: { color: '#2C3E50' }
+                    }
+                }
+            }
+        });
+        
+        // Histogramme groupé des temps d'arrêt par équipe et type
+        const equipeLabelsGrouped = {{ equipe_labels|safe }};
+        const typeLabelsGrouped = {{ type_labels|safe }};
+        const arretGrouped = {{ arret_grouped|safe }};
+        
+        const datasets = typeLabelsGrouped.map((type, idx) => ({
+            label: type,
+            data: arretGrouped[type],
+            backgroundColor: solidColors[idx % solidColors.length],
+            borderColor: solidColors[idx % solidColors.length],
+            borderWidth: 2,
+            borderRadius: 6
+        }));
+        
+        const groupedCtx = document.getElementById('groupedArretHistogram').getContext('2d');
+        new Chart(groupedCtx, {
+            type: 'bar',
+            data: {
+                labels: equipeLabelsGrouped,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 10, weight: 'bold' },
+                            color: '#2C3E50'
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        stacked: false,
+                        ticks: { color: '#2C3E50', font: { size: 10, weight: 'bold' } },
+                        grid: { display: false }
+                    },
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Temps d\'arrêt (min)', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(44, 62, 80, 0.1)' },
+                        ticks: { color: '#2C3E50' }
+                    }
+                }
+            }
+        });
+        
+        // Histogramme groupé des temps d'arrêt par équipe et responsable
+        const equipeLabelsGroupedResp = {{ equipe_labels|safe }};
+        const responsableLabelsGrouped = {{ responsable_labels|safe }};
+        const arretGroupedResponsable = {{ arret_grouped_responsable|safe }};
+
+        const datasetsResp = responsableLabelsGrouped.map((resp, idx) => ({
+            label: resp,
+            data: arretGroupedResponsable[resp],
+            backgroundColor: solidColors[idx % solidColors.length],
+            borderColor: solidColors[idx % solidColors.length],
+            borderWidth: 2,
+            borderRadius: 6
+        }));
+
+        const groupedRespCtx = document.getElementById('groupedArretResponsableHistogram').getContext('2d');
+        new Chart(groupedRespCtx, {
+            type: 'bar',
+            data: {
+                labels: equipeLabelsGroupedResp,
+                datasets: datasetsResp
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 10, weight: 'bold' },
+                            color: '#2C3E50'
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        stacked: false,
+                        ticks: { color: '#2C3E50', font: { size: 10, weight: 'bold' } },
+                        grid: { display: false }
+                    },
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: "Temps d'arrêt (min)", color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(44, 62, 80, 0.1)' },
+                        ticks: { color: '#2C3E50' }
+                    }
+                }
+            }
+        });
+
+        // Histogramme des réalisés et perte % par équipe
+        const equipeLabelsPerte = {{ equipe_labels|safe }};
+        const realiseValuesPerte = {{ realise_values|safe }};
+        const pertePourcentValues = {{ perte_pourcent_values|safe }};
+        
+        const ctxRealisePerte = document.getElementById('equipeRealisePerteHistogram').getContext('2d');
+        const gradientRealise = ctxRealisePerte.createLinearGradient(0, 0, 0, 300);
+        gradientRealise.addColorStop(0, '#66BB6A');
+        gradientRealise.addColorStop(1, 'rgba(102, 187, 106, 0.6)');
+        
+        const gradientPerte = ctxRealisePerte.createLinearGradient(0, 0, 0, 300);
+        gradientPerte.addColorStop(0, '#FFA726');
+        gradientPerte.addColorStop(1, 'rgba(255, 167, 38, 0.6)');
+
+        new Chart(ctxRealisePerte, {
+            type: 'bar',
+            data: {
+                labels: equipeLabelsPerte,
+                datasets: [
+                    {
+                        label: 'Réalisé',
+                        data: realiseValuesPerte,
+                        backgroundColor: gradientRealise,
+                        borderColor: '#4CAF50',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'Perte %',
+                        data: pertePourcentValues,
+                        backgroundColor: gradientPerte,
+                        borderColor: '#FF9800',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            font: { size: 12, weight: 'bold' },
+                            color: '#2C3E50'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        position: 'left',
+                        title: { display: true, text: 'Réalisé', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(44, 62, 80, 0.1)' },
+                        ticks: { color: '#2C3E50' }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: { display: true, text: 'Perte %', color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { display: false },
+                        ticks: { color: '#2C3E50' }
+                    },
+                    x: {
+                        ticks: { color: '#2C3E50', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>  
+
+    <script src="{% static 'rouibapp/home.js' %}"></script>
+</body>
+</html>

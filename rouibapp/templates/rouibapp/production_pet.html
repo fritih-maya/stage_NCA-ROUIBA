@@ -1,0 +1,1788 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production PET - ROUIBA</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/pet_arret.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+       body {
+    background: url("{% static 'rouibapp/back.png' %}") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+    padding: 0 20px;
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.08);
+    padding: 20px;
+}
+
+.content-body {
+    background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.content-header {
+    background: rgba(34, 139, 34, 0.18);
+    padding: 20px 30px;
+    border-radius: 48px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+    margin-bottom: 30px;
+}
+
+.content-header h1 {
+    color: #111 !important; /* Noir intense */
+    font-weight: bold;
+}
+
+.btn.btn-outline-secondary {
+    color: #111 !important;      /* Noir intense pour le texte */
+    border-color: #111 !important; /* Noir intense pour la bordure */
+    font-weight: bold;
+    background: transparent;
+}
+
+.btn.btn-outline-secondary:hover,
+.btn.btn-outline-secondary:focus {
+    background: #111 !important; /* Fond noir au survol */
+    color: #fff !important;      /* Texte blanc au survol */
+    border-color: #111 !important;
+}
+
+/* BOUTONS FIXES - Solution corrigée */
+.btn-group-custom {
+    position: sticky;
+    top: 0;
+    left: 0;
+
+    z-index: 1000;
+    padding: 15px 20px;
+  
+    margin-bottom: 0;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+}
+
+.btn-group-custom h2 {
+    margin-bottom: 15px;
+    color: #111 !important;
+    font-weight: bold;
+}
+
+.btn-group-custom > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-group-custom .btn {
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-group-custom .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* CONTENEUR TABLE - Modifié pour les boutons fixes */
+.table-container {
+    background: rgba(34, 139, 34, 0.18);
+    border-radius: 0 0 10px 10px; /* Arrondir seulement le bas */
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    border-radius: 48px 48px 48px 48px;
+     box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+    margin-top: 0; /* Supprimer la marge car maintenant collé aux boutons */
+    padding: 0 30px 20px 30px; /* Pas de padding en haut */
+    position: relative;
+}
+
+.table {
+    width: 100%;
+    min-width: 2500px;
+    border-collapse: collapse;
+    margin: 20px 0 0 0; /* Espace entre les boutons et le tableau */
+    font-size: 11px;
+}
+
+.table th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border: 1px solid #34495e;
+    padding: 8px 4px;
+    text-align: center;
+    vertical-align: middle;
+    min-width: 81px;
+}
+
+.table td {
+    border: 1px solid #ddd;
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tbody tr:hover {
+    background-color: #e3f2fd;
+    cursor: pointer;
+}
+
+.table-active {
+    background-color: #cce5ff !important;
+    animation: highlightRow 0.3s ease-in-out;
+}
+
+@keyframes highlightRow {
+    0% { background-color: #fff; }
+    50% { background-color: #007bff; }
+    100% { background-color: #cce5ff; }
+}
+
+.group-base { background-color: #e8f5e8; }
+.group-personnel { background-color: #fff3cd; }
+.group-pertes { background-color: #f8d7da; }
+.group-arrets { background-color: #d4edda; }
+.group-totaux { background-color: #d1ecf1; }
+
+.modal-xl {
+    max-width: 95%;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.form-group-small {
+    flex: 1;
+    min-width: 150px;
+}
+
+.section-title {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-left: 4px solid #155724;
+    margin: 20px 0 15px 0;
+    font-weight: bold;
+    color: #495057;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #f5f5f5;
+}
+
+.pagination .current {
+    background-color: #007cba;
+    color: white;
+    border-color: #007cba;
+}
+
+.pagination .disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 12px;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.table th {
+    background-color: #2c3e50;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.pagination-info {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.per-page-selector {
+    text-align: center; 
+    margin: 20px 0;
+}
+
+.per-page-selector select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.logo-rouiba {
+    display: block;
+    margin: 0 auto 5px auto;
+    width: 100px;
+    height: auto;
+}
+
+/* Conteneur global */
+.container-fluid.mt-4 {
+    padding: 0 20px;
+}
+
+/* Responsive: Ajustement pour les petits écrans */
+@media (max-width: 768px) {
+    .btn-group-custom {
+        padding: 10px 15px;
+    }
+    
+    .btn-group-custom > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-group-custom .btn {
+        margin-bottom: 5px;
+        margin-right: 0;
+    }
+    
+    .table-container {
+        padding: 0 15px 15px 15px;
+    }
+    
+    .container-fluid.mt-4 {
+        padding: 0 10px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="toggleIcon"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" 
+                alt="Logo Rouiba" 
+                class="logo-rouiba">
+            <small>Panel d'administration</small>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+            <li><a href="{% url 'statistiques' %}"><i class="fas fa-chart-bar"></i><span>Statistiques</span></a></li>
+            <li><a href="{% url 'equipe' %}"><i class="fas fa-users"></i><span>Équipes</span></a></li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)" class="active">
+                    <i class="fas fa-box"></i><span>Produits</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                   <li><a href="{% url 'carton' %}"><span>Carton</span></a></li>
+                    <li><a href="{% url 'PET' %}"><span>PET Arrêts</span></a></li>
+                   
+                </ul>
+            </li>
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content" id="mainContent">
+        <div class="content-header">
+            <h1><i class="fas fa-industry"></i> Gestion Production PET</h1>
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'PET' %}">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleTableBtn">
+                        <i class="fas fa-table"></i> Afficher la table d'arret pet
+                    </button>
+                </a>
+                <a href="{% url 'dm_pet' %}">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleDMBtn">
+                        <i class="fas fa-table"></i> Afficher la table Indicateur Perf
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tableau des productions -->
+        <div class="container-fluid mt-4">
+            <div class="table-container">
+                <div class="btn-group-custom">
+                     <h2>Liste des Productions PET</h2>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ajoutProductionPETModal">
+                    <i class="fas fa-plus"></i> Ajouter Production PET
+                </button>
+                <button type="button" class="btn btn-primary" id="modifierBtn" style="display: none;" onclick="modifierProductionPET()">
+                    <i class="fas fa-edit"></i> Modifier
+                </button>
+                <button type="button" class="btn btn-danger" id="supprimerBtn" style="display: none;" onclick="supprimerProductionPET()">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+                <button type="button" class="btn btn-info" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
+             </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="group-base">Date</th>
+                            <th class="group-base">Faction</th>
+                            <th class="group-base">Ligne</th>
+                            <th class="group-base">Équipe</th>
+                            <th class="group-base">Format</th>
+                            <th class="group-base">Cadence</th>
+                            <th class="group-base">Temps Brut</th>
+                            <th class="group-base">Temps Programmé</th>
+                            <th class="group-base">Temps Non Programmé</th>
+                            <th class="group-base">Théorique</th>
+                            <th class="group-base">Réalisé</th>
+                            <th class="group-base">Écart</th>
+                            <th class="group-base">TRS %</th>
+                            <th class="group-base">Temps Productif</th>
+                            <th class="group-base">Heures Arrêts</th>
+                            <th class="group-base">C</th>
+                            <th class="group-base">Intrants</th>
+                            <th class="group-base">Technique</th>
+                            <th class="group-base">Opérationnel</th>
+                            <th class="group-base">Siroperie</th>
+                            <th class="group-base">Utilite</th>
+                            <th class="group-base">Espace</th>
+                            <th class="group-base">Transports</th>
+                            <th class="group-pertes">Pertes Vides</th>
+                            <th class="group-pertes">Pertes Pleines</th>
+                            <th class="group-pertes">Total Perte</th>
+                            <th class="group-arrets">Format Théo.</th>
+                            <th class="group-arrets">Format Réel</th>
+                            <th class="group-arrets">Format Écart</th>
+                            <th class="group-arrets">Entretien Théo.</th>
+                            <th class="group-arrets">Entretien Réel</th>
+                            <th class="group-arrets">Entretien Écart</th>
+                            <th class="group-arrets">NEP Complet Théo.</th>
+                            <th class="group-arrets">NEP Complet Réel</th>
+                            <th class="group-arrets">NEP Complet Écart</th>
+                            <th class="group-arrets">NEP Soudé Théo.</th>
+                            <th class="group-arrets">NEP Soudé Réel</th>
+                            <th class="group-arrets">NEP Soudé Écart</th>
+                            <th class="group-arrets">NIA Théo.</th>
+                            <th class="group-arrets">NIA Réel</th>
+                            <th class="group-arrets">NIA Écart</th>
+                            <th class="group-arrets">Révision Théo.</th>
+                            <th class="group-arrets">Révision Réel</th>
+                            <th class="group-arrets">Révision Écart</th>
+                            <th class="group-totaux">Total Arrêts Théo. Program.</th>
+                            <th class="group-totaux">Total Arrêts Réels Program.</th>
+                            <th class="group-totaux">Total Dépassements</th>
+                            <th class="group-totaux">Total Arrêts Non Program.</th>
+                            <th class="group-totaux">Total Arrêts</th>
+                            <th class="group-totaux">Temps Productif Total</th>
+                            <th class="group-totaux">Total Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in productions %}
+                        <tr onclick="selectionnerLigne(this)" 
+                            data-production-id="{{ prod.id_production }}"
+                            data-ligne-id="{{ prod.ligne.id_ligne|default:'' }}"
+                            data-equipe-id="{{ prod.equipe.id_equipe|default:'' }}"
+                            data-faction-id="{{ prod.faction.id_faction|default:'' }}"
+                            data-date="{{ prod.date|date:'Y-m-d' }}"
+                            data-format="{{ prod.format_produit }}"
+                            data-cadence="{{ prod.cadence }}"
+                            data-temps-brut="{{ prod.temps_brut }}"
+                            data-temps-programme="{{ prod.temps_programme }}"
+                            data-theorique="{{ prod.theorique }}"
+                            data-realise="{{ prod.realise }}"
+                            data-temps-non-programme="{{ prod.temps_non_programme }}"
+                            data-ecart="{{ prod.ecart }}"
+                            data-trs-pourcentage="{{ prod.trs_pourcentage }}"
+                            data-temps-productif="{{ prod.temps_productif }}"
+                            data-heures-arrets="{{ prod.heures_arrets }}"
+                            data-pertes-vides="{{ prod.pertes_vides }}"
+                            data-pertes-pleines="{{ prod.pertes_pleines }}"
+                            data-c="{{ prod.c }}"
+                            data-intrants="{{ prod.intrants }}"
+                            data-technique="{{ prod.technique }}"
+                            data-operationnel="{{ prod.operationnel }}"
+                            data-siroperie="{{ prod.siroperie }}"
+                            data-utilite="{{ prod.utilite }}"
+                            data-espace="{{ prod.espace }}"
+                            data-transports="{{ prod.transports }}"
+                            data-changement-format-theo="{{ prod.changement_format_theorique }}"
+                            data-changement-format-reel="{{ prod.changement_format_reel }}"
+                            data-entretien-theo="{{ prod.entretien_hebdo_theorique }}"
+                            data-entretien-reel="{{ prod.entretien_hebdo_reel }}"
+                            data-nep-complet-theo="{{ prod.nep_complet_mp_theorique }}"
+                            data-nep-complet-reel="{{ prod.nep_complet_mp_reel }}"
+                            data-nep-soude-theo="{{ prod.nep_soude_mp_theorique }}"
+                            data-nep-soude-reel="{{ prod.nep_soude_mp_reel }}"
+                            data-nia-theo="{{ prod.nia_theorique }}"
+                            data-nia-reel="{{ prod.nia_reel }}"
+                            data-revision-theo="{{ prod.revision_theorique }}"
+                            data-revision-reel="{{ prod.revision_reel }}"
+                            style="cursor: pointer;">
+                            
+                            <td>{{ prod.date|date:"d/m/Y" }}</td>
+                            <td>{{ prod.faction.nom_faction|default:"-" }}</td>
+                            <td>{{ prod.ligne.nom_ligne|default:"-" }}</td>
+                            <td>{{ prod.equipe.nom|default:"-" }} {{ prod.equipe.prenom|default:"" }}</td>
+                            <td>{{ prod.format_produit }}</td>
+                            <td>{{ prod.cadence|floatformat:1 }}</td>
+                            <td>{{ prod.temps_brut }}</td>
+                            <td>{{ prod.temps_programme }}</td>
+                            <td>{{ prod.temps_non_programme }}</td>
+                            <td>{{ prod.theorique }}</td>
+                            <td>{{ prod.realise }}</td>
+                            <td>{{ prod.ecart }}</td>
+                            <td>{{ prod.trs_pourcentage|floatformat:1 }}%</td>
+                            <td>{{ prod.temps_productif|floatformat:2 }}</td>
+                            <td>{{ prod.heures_arrets|floatformat:2 }}</td>
+                            <td>{{ prod.c|floatformat:2 }}</td>
+                            <td>{{ prod.intrants|floatformat:2 }}</td>
+                            <td>{{ prod.technique|floatformat:2 }}</td>
+                            <td>{{ prod.operationnel|floatformat:2 }}</td>
+                            <td>{{ prod.siroperie|floatformat:2 }}</td>
+                            <td>{{ prod.utilite|floatformat:2 }}</td>
+                            <td>{{ prod.espace|floatformat:2 }}</td>
+                            <td>{{ prod.transports|floatformat:2 }}</td>
+                            <td>{{ prod.pertes_vides }}</td>
+                            <td>{{ prod.pertes_pleines }}</td>
+                            <td>{{ prod.total_perte }}</td>
+                            <td>{{ prod.changement_format_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.changement_format_reel|floatformat:2 }}</td>
+                            <td>{{ prod.changement_format_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.entretien_hebdo_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.entretien_hebdo_reel|floatformat:2 }}</td>
+                            <td>{{ prod.entretien_hebdo_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.nep_complet_mp_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.nep_complet_mp_reel|floatformat:2 }}</td>
+                            <td>{{ prod.nep_complet_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.nep_soude_mp_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.nep_soude_mp_reel|floatformat:2 }}</td>
+                            <td>{{ prod.nep_soude_mp_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.nia_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.nia_reel|floatformat:2 }}</td>
+                            <td>{{ prod.nia_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.revision_theorique|floatformat:2 }}</td>
+                            <td>{{ prod.revision_reel|floatformat:2 }}</td>
+                            <td>{{ prod.revision_ecart|floatformat:2 }}</td>
+                            <td>{{ prod.total_arrets_theorique_program|floatformat:2 }}</td>
+                            <td>{{ prod.total_arrets_reels_program|floatformat:2 }}</td>
+                            <td>{{ prod.total_depassements|floatformat:2 }}</td>
+                            <td>{{ prod.total_arrets_non_progr|floatformat:2 }}</td>
+                            <td>{{ prod.total_arrets|floatformat:2 }}</td>
+                            <td>{{ prod.temps_productif_total|floatformat:2 }}</td>
+                            <td>{{ prod.total_final|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="50" class="text-center text-muted">
+                                <i class="fas fa-inbox"></i> Aucune production PET enregistrée.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'ajout -->
+    <div class="modal fade" id="ajoutProductionPETModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="post" action="{% url 'ajouter_production_pet' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-plus-circle"></i> Ajouter une Production PET
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="section-title"> Informations de Base</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Date </label>
+                                <input type="date" class="form-control" name="date" required>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Faction</label>
+                                <select class="form-control" name="faction">
+                                    <option value="">-- Sélectionner --</option>
+                                    {% for f in factions %}
+                                    <option value="{{ f.id_faction }}">{{ f.nom_faction }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ligne</label>
+                                <select class="form-control" name="ligne" id="ligne_ajout" required>
+                                    <option value=""></option>
+                                    {% for l in lignes %}
+                                    <option value="{{ l.id_ligne }}">{{ l.nom_ligne }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Équipe </label>
+                                <select class="form-control" name="equipe"  id="equipe_ajout" readonly>
+                                    <option value="">-- Sélectionner --</option>
+                                    {% for e in equipes %}
+                                    <option value="{{ e.id_equipe }}">{{ e.nom }} {{ e.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Format Produit</label>
+                                <select class="form-control" name="format_produit" id="format_produit" required>
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="25 cl">25 cl</option>
+                                    <option value="33 cl">33 cl</option>
+                                    <option value="75 cl">75 cl</option>
+                                    <option value="100 cl">100 cl</option>
+                                    <option value="200 cl">200 cl</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Données de Production</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Cadence</label>
+                                <input type="number" step="0.01" class="form-control" name="cadence" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Brut (h)</label>
+                                <input type="number" class="form-control" name="temps_brut" value="8" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Programmé</label>
+                                <input type="number" class="form-control" name="temps_programme" placeholder="0">
+                            </div>
+                             <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps NProgrammé</label>
+                                <input type="number" class="form-control" name="temps_non_programme" placeholder="0" readonly>
+                            </div>
+
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Théorique</label>
+                                <input type="number" class="form-control" name="theorique" placeholder="0" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Réalisé</label>
+                                <input type="number" class="form-control" name="realise" placeholder="0" required>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ecart</label>
+                                <input type="number" class="form-control" name="ecart" placeholder="0" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Trs  (%)</label>
+                                <input type="number" class="form-control" name="trs" placeholder="0" readonly>
+                            </div>
+                             <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Productif</label>
+                                <input type="number" class="form-control" name="temps_productif" placeholder="0" readonly>
+                            </div>
+                             <div class="form-group-small">
+                                <label class="form-label fw-bold">Heure d'arret</label>
+                                <input type="number" class="form-control" name="heure_arrets" id="heure_arrets_ajout" placeholder="0" readonly>
+                            </div>
+                        </div>
+
+
+                        <div class="section-title"> Pertes</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Pertes Vides</label>
+                                <input type="number" class="form-control" id="pertes_vides_mod" name="pertes_vides" >
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Pertes Pleines</label>
+                                <input type="number" class="form-control" id="pertes_pleines_mod" name="pertes_pleines" >
+                            </div>
+                        </div>
+
+                        <!-- Section : Variables de coût -->
+                        <div class="section-title"> Variables de Coût</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">C</label>
+                                <input type="number" step="0.01" class="form-control" name="c"id="c_ajout" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Intrants</label>
+                                <input type="number" step="0.01" class="form-control" name="intrants" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Technique</label>
+                                <input type="number" step="0.01" class="form-control" name="technique" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Opérationnel</label>
+                                <input type="number" step="0.01" class="form-control" name="operationnel" placeholder="0.00" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Siroperie</label>
+                                <input type="number" step="0.01" class="form-control" name="siroperie" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Utilite</label>
+                                <input type="number" step="0.01" class="form-control" name="utilite" placeholder="0.00" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Espace</label>
+                                <input type="number" step="0.01" class="form-control" name="espace" placeholder="0.00" readonly>
+                            </div>
+                             <div class="form-group-small">
+                                <label class="form-label fw-bold">Transports</label>
+                                <input type="number" step="0.01" class="form-control" name="transports" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="section-title"> Arrêts Programmés</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-secondary">Changement de Format</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="changement_format_theorique_mod" name="changement_format_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="changement_format_reel_mod" name="changement_format_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">Entretien Hebdomadaire</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="entretien_hebdo_theorique_mod" name="entretien_hebdo_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="entretien_hebdo_reel_mod" name="entretien_hebdo_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">NEP Complet</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_complet_mp_theorique_mod" name="nep_complet_mp_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_complet_mp_reel_mod" name="nep_complet_mp_reel">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="text-secondary">NEP Soudé</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_soude_mp_theorique_mod" name="nep_soude_mp_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_soude_mp_reel_mod" name="nep_soude_mp_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">NIA</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nia_theorique_mod" name="nia_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nia_reel_mod" name="nia_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">Révision</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="revision_theorique_mod" name="revision_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="revision_reel_mod" name="revision_reel">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de modification -->
+    <div class="modal fade" id="modifierProductionPETModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form id="formModifierProductionPET" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-edit"></i> Modifier Production PET
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="section-title"> Informations de Base</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Date</label>
+                                <input type="date" class="form-control" id="date_mod" name="date">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Faction</label>
+                                <select class="form-control" id="faction_mod" name="faction">
+                                    <option value="">-- Aucune --</option>
+                                    {% for f in factions %}
+                                    <option value="{{ f.id_faction }}">{{ f.nom_faction }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ligne</label>
+                                <select class="form-control" name="ligne" id="ligne_mod" required>
+                                    <option value=""></option>
+                                    {% for l in lignes %}
+                                    <option value="{{ l.id_ligne }}">{{ l.nom_ligne }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Équipe</label>
+                                <select class="form-control" name="equipe" id="equipe_modif">
+                                    <option value=""></option>
+                                    {% for e in equipes %}
+                                    <option value="{{ e.id_equipe }}">{{ e.nom }} {{ e.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Format Produit</label>
+                                <select class="form-control" id="format_produit_mod" name="format_produit">
+                                    <option value="25 cl">25 cl</option>
+                                    <option value="33 cl">33 cl</option>
+                                    <option value="75 cl">75 cl</option>
+                                    <option value="100 cl">100 cl</option>
+                                    <option value="200 cl">200 cl</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="section-title"> Données de Production</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label">Cadence</label>
+                                <input type="number" step="0.01" class="form-control" id="cadence_mod" name="cadence" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Brut</label>
+                                <input type="number" class="form-control" id="temps_brut_mod" name="temps_brut" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Programmé</label>
+                                <input type="number" class="form-control" id="temps_programme_mod" name="temps_programme">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps NProgrammé</label>
+                                <input type="number" class="form-control" id="temps_non_programme_mod" name="temps_non_programme" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Théorique</label>
+                                <input type="number" class="form-control" id="theorique_mod" name="theorique" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Réalisé</label>
+                                <input type="number" class="form-control" id="realise_mod" name="realise">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ecart</label>
+                                <input type="number" class="form-control" id="ecart_mod" name="ecart" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRS (%)</label>
+                                <input type="number" class="form-control" id="trs_mod" name="trs" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps Productif</label>
+                                <input type="number" class="form-control" id="temps_productif_mod" name="temps_productif" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Heure d'arrêt</label>
+                                <input type="number" class="form-control" id="heure_arrets_mod" name="heure_arrets" readonly>
+                            </div>
+                        </div>
+
+
+                        <div class="section-title"> Pertes</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Pertes Vides</label>
+                                <input type="number" class="form-control" id="pertes_vides" name="pertes_vides" required>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Pertes Pleines</label>
+                                <input type="number" class="form-control" id="pertes_pleines" name="pertes_pleines" required>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Variables de Coût</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">C</label>
+                                <input type="number" step="0.01" class="form-control" id="c_mod" name="c">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Intrants</label>
+                                <input type="number" step="0.01" class="form-control" id="intrants_mod" name="intrants">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Technique</label>
+                                <input type="number" step="0.01" class="form-control" id="technique_mod" name="technique">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Opérationnel</label>
+                                <input type="number" step="0.01" class="form-control" id="operationnel_mod" name="operationnel">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Siroperie</label>
+                                <input type="number" step="0.01" class="form-control" id="siroperie_mod" name="siroperie">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Utilite</label>
+                                <input type="number" step="0.01" class="form-control" id="utilite_mod" name="utilite">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Espace</label>
+                                <input type="number" step="0.01" class="form-control" id="espace_mod" name="espace">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Transports</label>
+                                <input type="number" step="0.01" class="form-control" id="transports_mod" name="transports">
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Arrêts Programmés</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-secondary">Changement de Format</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="changement_format_theorique" name="changement_format_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="changement_format_reel" name="changement_format_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">Entretien Hebdomadaire</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="entretien_hebdo_theorique" name="entretien_hebdo_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="entretien_hebdo_reel" name="entretien_hebdo_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">NEP Complet</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_complet_mp_theorique" name="nep_complet_mp_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_complet_mp_reel" name="nep_complet_mp_reel">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="text-secondary">NEP Soudé</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_soude_mp_theorique" name="nep_soude_mp_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nep_soude_mp_reel" name="nep_soude_mp_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">NIA</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="nia_theorique" name="nia_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="nia_reel" name="nia_reel">
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-secondary">Révision</h6>
+                                <div class="form-row">
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Théorique</label>
+                                        <input type="number" step="0.01" class="form-control" id="revision_theorique" name="revision_theorique">
+                                    </div>
+                                    <div class="form-group-small">
+                                        <label class="form-label fw-bold">Réel</label>
+                                        <input type="number" step="0.01" class="form-control" id="revision_reel" name="revision_reel">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Fermer
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script>
+        let ligneSelectionnee = null;
+        let idProductionSelectionnee = null;
+
+        // Fonction pour sélectionner une ligne
+        function selectionnerLigne(ligne) {
+            // Retirer la sélection précédente
+            if (ligneSelectionnee) {
+                ligneSelectionnee.classList.remove('table-active');
+            }
+            
+            // Ajouter la nouvelle sélection
+            ligne.classList.add('table-active');
+            ligneSelectionnee = ligne;
+            idProductionSelectionnee = ligne.dataset.productionId;
+
+            // Afficher les boutons de modification et suppression
+            document.getElementById('modifierBtn').style.display = 'inline-block';
+            document.getElementById('supprimerBtn').style.display = 'inline-block';
+            
+            console.log('Production sélectionnée:', idProductionSelectionnee);
+        }
+
+        // Fonction pour modifier une production PET
+        function modifierProductionPET() {
+            if (!idProductionSelectionnee) {
+                alert('Veuillez sélectionner une production à modifier.');
+                return;
+            }
+
+            try {
+                // Récupérer les données de la ligne sélectionnée
+                const data = ligneSelectionnee.dataset;
+
+                console.log('dataset:', data);
+                console.log('Pertes Vides:', data.pertesVides);
+                console.log('Changement Format Theo:', data.changementFormatTheo);
+                
+                // Pré-remplir le formulaire de modification avec les données
+                document.getElementById('date_mod').value = data.date || '';
+                document.getElementById('faction_mod').value = data.factionId || '';
+                document.getElementById('equipe_modif').value = data.equipeId || '';
+                document.getElementById('format_produit_mod').value = data.format || '';
+                document.getElementById('cadence_mod').value = data.cadence || '';
+                document.getElementById('temps_brut_mod').value = data.tempsBrut || '';
+                document.getElementById('temps_programme_mod').value = data.tempsProgramme || '';
+                const cadence = parseFloat(data.cadence) || 0;
+                const programme = parseFloat(data.tempsProgramme) || 0;
+                document.getElementById('theorique_mod').value = data.theorique || (cadence * programme).toFixed(2);
+                document.getElementById('realise_mod').value = data.realise || '';
+                document.getElementById('ecart_mod').value = data.ecart || '';
+                document.getElementById('trs_mod').value = data.trsPourcentage || '';
+                document.getElementById('temps_productif_mod').value = data.tempsProductif || '';
+                document.getElementById('heure_arrets_mod').value = data.heuresArrets || '';
+                document.getElementById('temps_non_programme_mod').value = data.tempsNonProgramme || '';
+                
+                
+                // Pertes
+                document.getElementById('pertes_vides').value = data.pertesVides || '';
+                document.getElementById('pertes_pleines').value = data.pertesPleines || '';
+                
+                // Variables de coût
+                document.getElementById('c_mod').value = data.c || '';
+                document.getElementById('intrants_mod').value = data.intrants || '';
+                document.getElementById('technique_mod').value = data.technique || '';
+                document.getElementById('operationnel_mod').value = data.operationnel || '';
+                document.getElementById('siroperie_mod').value = data.siroperie || '';
+                document.getElementById('utilite_mod').value = data.utilite || '';
+                document.getElementById('espace_mod').value = data.espace || '';
+                document.getElementById('transports_mod').value = data.transports || '';
+                
+                // Arrêts programmés
+                document.getElementById('changement_format_theorique').value = data.changementFormatTheo || '';
+                document.getElementById('changement_format_reel').value = data.changementFormatReel || '';
+                document.getElementById('entretien_hebdo_theorique').value = data.entretienTheo || '';
+                document.getElementById('entretien_hebdo_reel').value = data.entretienReel || '';
+                document.getElementById('nep_complet_mp_theorique').value = data.nepCompletTheo || '';
+                document.getElementById('nep_complet_mp_reel').value = data.nepCompletReel || '';
+                document.getElementById('nep_soude_mp_theorique').value = data.nepSoudeTheo || '';
+                document.getElementById('nep_soude_mp_reel').value = data.nepSoudeReel || '';
+                document.getElementById('nia_theorique').value = data.niaTheo || '';
+                document.getElementById('nia_reel').value = data.niaReel || '';
+                document.getElementById('revision_theorique').value = data.revisionTheo || '';
+                document.getElementById('revision_reel').value = data.revisionReel || '';
+                document.getElementById('ligne_mod').value = data.ligneId || '';
+                
+
+                // Définir l'action du formulaire
+                document.getElementById('formModifierProductionPET').action = `/production_pet/modifier/${idProductionSelectionnee}/`;
+                
+                
+                // Afficher le modal
+                const modal = new bootstrap.Modal(document.getElementById('modifierProductionPETModal'));
+                modal.show();
+                
+            } catch (error) {
+                console.error('Erreur lors de la modification:', error);
+                alert('Erreur lors de la préparation de la modification. Vérifiez la console pour plus de détails.');
+            }
+        }
+
+        // Calculs modifies
+        document.addEventListener('DOMContentLoaded', function() {
+            const modModal = document.getElementById('modifierProductionPETModal');
+            if (modModal) {
+                // Récupération des champs
+                const cadenceInput = modModal.querySelector('#cadence_mod');
+                const cInput = modModal.querySelector('#c_mod');
+                const tempsBrutInput = modModal.querySelector('#temps_brut_mod');
+                const tempsProgrammeInput = modModal.querySelector('#temps_programme_mod');
+                const tempsNonProgrammeInput = modModal.querySelector('#temps_non_programme_mod');
+                const theoriqueInput = modModal.querySelector('#theorique_mod');
+                const realiseInput = modModal.querySelector('#realise_mod');
+                const ecartInput = modModal.querySelector('#ecart_mod');
+                const trsInput = modModal.querySelector('#trs_mod');
+                const tempsProductifInput = modModal.querySelector('#temps_productif_mod');
+                const heuresArretsInput = modModal.querySelector('#heure_arrets_mod');
+        
+                // Fonctions de calcul
+                function updateTempsNonProgramme() {
+                    const brut = parseFloat(tempsBrutInput.value) || 0;
+                    const programme = parseFloat(tempsProgrammeInput.value) || 0;
+                    tempsNonProgrammeInput.value = (brut - programme).toFixed(2);
+                }
+        
+                function updateTheorique() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const programme = parseFloat(tempsProgrammeInput.value) || 0;
+                    theoriqueInput.value = (cadence * programme).toFixed(2);
+                }
+        
+                function updateEcart() {
+                    const theorique = parseFloat(theoriqueInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    ecartInput.value = (theorique - realise).toFixed(2);
+                }
+        
+                function updateTRS() {
+                    const theorique = parseFloat(theoriqueInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    trsInput.value = theorique > 0 ? ((realise / theorique) * 100).toFixed(2) : '0.00';
+                }
+        
+                function updateTempsProductif() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    tempsProductifInput.value = cadence > 0 ? (realise / cadence).toFixed(2) : '0.00';
+                }
+        
+                function updateHeuresArrets() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const ecart = parseFloat(ecartInput.value) || 0;
+                    heuresArretsInput.value = cadence > 0 ? (ecart / cadence).toFixed(2) : '0.00';
+                }
+
+                function updateCMod() {
+                    const ecart = parseFloat(ecartInput.value) || 0;
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    cInput.value = (cadence > 0) ? ((ecart / cadence) * 60).toFixed(2) : '';
+                }
+        
+                // Mise à jour globale
+                function updateAllCalculs() {
+                    updateTempsNonProgramme();
+                    updateTheorique();
+                    updateEcart();
+                    updateTRS();
+                    updateTempsProductif();
+                    updateHeuresArrets();
+                    updateCMod();
+                }
+        
+                // Listeners
+                if (tempsProgrammeInput) {
+                    tempsProgrammeInput.addEventListener('input', updateAllCalculs);
+                }
+                if (realiseInput) {
+                    realiseInput.addEventListener('input', updateAllCalculs);
+                }
+                if (cadenceInput) {
+                    cadenceInput.addEventListener('input', updateAllCalculs);
+                }
+            }
+        });
+        
+        
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const modForm = document.getElementById('formModifierProductionPET');
+            if (modForm) {
+                modForm.addEventListener('submit', function() {
+                    const cadenceInput = document.getElementById('cadence_mod');
+                    const tempsProgrammeInput = document.getElementById('temps_programme_mod');
+                    const theoriqueInput = document.getElementById('theorique_mod');
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const programme = parseFloat(tempsProgrammeInput.value) || 0;
+                    theoriqueInput.value = (cadence * programme).toFixed(2);
+                });
+            }
+        });
+        
+       
+        
+        // Gerer equipe by date, faction, ligne  
+        document.addEventListener('DOMContentLoaded', function() {
+            const modModal = document.getElementById('modifierProductionPETModal');
+            if (modModal) {
+                const dateInput = modModal.querySelector('input[name="date"]');
+                const factionSelect = modModal.querySelector('select[name="faction"]');
+                const ligneSelect = modModal.querySelector('select[name="ligne"]');
+                const equipeSelect = modModal.querySelector('#equipe_modif');
+        
+                function fetchEquipePETModif() {
+                    const date = dateInput.value;
+                    const faction = factionSelect.value; // id_faction
+                    const ligne = ligneSelect.value;
+                    if (date && faction && ligne) {
+                        fetch(`/ajax/get_equipe_by_date_quart_ligne_pet/?date=${date}&faction=${faction}&ligne_id=${ligne}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.equipe_id) {
+                                    equipeSelect.value = data.equipe_id;
+                                } else {
+                                    equipeSelect.value = '';
+                                }
+                            });
+                    } else {
+                        equipeSelect.value = '';
+                    }
+                }
+        
+                if (dateInput && factionSelect && ligneSelect && equipeSelect) {
+                    dateInput.addEventListener('change', fetchEquipePETModif);
+                    factionSelect.addEventListener('change', fetchEquipePETModif);
+                    ligneSelect.addEventListener('change', fetchEquipePETModif);
+                }
+            }
+        });
+
+        // Fonction pour supprimer une production
+        function supprimerProductionPET() {
+            if (!idProductionSelectionnee) {
+                alert('Veuillez sélectionner une production à supprimer.');
+                return;
+            }
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette production PET ? Cette action est irréversible.')) {
+                window.location.href = `/production_pet/supprimer/${idProductionSelectionnee}/`;
+            }
+        }
+        
+       
+        
+        // Gerer equipe by date, faction, ligne 
+        document.addEventListener('DOMContentLoaded', function() {
+            const ajoutModal = document.getElementById('ajoutProductionPETModal');
+            if (ajoutModal) {
+                const dateInput = ajoutModal.querySelector('input[name="date"]');
+                const factionSelect = ajoutModal.querySelector('select[name="faction"]');
+                const ligneSelect = ajoutModal.querySelector('select[name="ligne"]');
+                const equipeSelect = ajoutModal.querySelector('#equipe_ajout');
+        
+                function fetchEquipePET() {
+                    const date = dateInput.value;
+                    const faction = factionSelect.value; // faction = id_faction
+                    const ligne = ligneSelect.value;
+                    if (date && faction && ligne) {
+                        // Récupère le nom du quart à partir du select
+                        const quart = factionSelect.options[factionSelect.selectedIndex].text;
+                        fetch(`/ajax/get_equipe_by_date_quart_ligne_pet/?date=${date}&faction=${faction}&ligne_id=${ligne}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.equipe_id) {
+                                    equipeSelect.value = data.equipe_id;
+                                } else {
+                                    equipeSelect.value = '';
+                                }
+                            });
+                    } else {
+                        equipeSelect.value = '';
+                    }
+                }
+        
+                if (dateInput && factionSelect && ligneSelect && equipeSelect) {
+                    dateInput.addEventListener('change', fetchEquipePET);
+                    factionSelect.addEventListener('change', fetchEquipePET);
+                    ligneSelect.addEventListener('change', fetchEquipePET);
+                }
+            }
+        });
+
+        // Gerer cadence by format 
+        document.addEventListener('DOMContentLoaded', function() {
+            const ajoutModal = document.getElementById('ajoutProductionPETModal');
+            if (ajoutModal) {
+                const formatSelect = ajoutModal.querySelector('select[name="format_produit"]');
+                const cadenceInput = ajoutModal.querySelector('input[name="cadence"]');
+                if (formatSelect && cadenceInput) {
+                    formatSelect.addEventListener('change', function() {
+                        const format = formatSelect.value;
+                        let cadence = '';
+                        if (format === "25 cl" || format === "33 cl") {
+                            cadence = 24000;
+                        } else if (format === "75 cl") {
+                            cadence = 18000;
+                        } else if (format === "100 cl") {
+                            cadence = 15000;
+                        } else if (format === "200 cl") {
+                            cadence = 7500;
+                        }
+                        cadenceInput.value = cadence;
+                    });
+                }
+            }
+        });
+        
+        
+        // Gerer les calculs 
+        document.addEventListener('DOMContentLoaded', function() {
+            const ajoutModal = document.getElementById('ajoutProductionPETModal');
+            if (ajoutModal) {
+                // Inputs
+                const dateInput = ajoutModal.querySelector('input[name="date"]');
+                const factionSelect = ajoutModal.querySelector('select[name="faction"]');
+                const cadenceInput = ajoutModal.querySelector('input[name="cadence"]');
+                const tempsProgrammeInput = ajoutModal.querySelector('input[name="temps_programme"]');
+                const tempsBrutInput = ajoutModal.querySelector('input[name="temps_brut"]');
+                const tempsNonProgrammeInput = ajoutModal.querySelector('input[name="temps_non_programme"]');
+                const theoriqueInput = ajoutModal.querySelector('input[name="theorique"]');
+                const realiseInput = ajoutModal.querySelector('input[name="realise"]');
+                const ecartInput = ajoutModal.querySelector('input[name="ecart"]');
+                const trsInput = ajoutModal.querySelector('input[name="trs"]');
+                const tempsProductifInput = ajoutModal.querySelector('input[name="temps_productif"]');
+                const heuresArretsInput = ajoutModal.querySelector('input[name="heure_arrets"]');
+                const cInput = ajoutModal.querySelector('input[name="c"]');
+        
+                // Variable pour la durée d'arrêt
+                let dureeArret = 0;
+        
+                // Fonctions de calcul
+                function updateTempsNonProgramme() {
+                    const brut = parseFloat(tempsBrutInput.value) || 0;
+                    const programme = parseFloat(tempsProgrammeInput.value) || 0;
+                    tempsNonProgrammeInput.value = brut - programme;
+                }
+        
+                function updateTheorique() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const programme = parseFloat(tempsProgrammeInput.value) || 0;
+                    theoriqueInput.value = cadence * programme;
+                }
+        
+                function updateEcart() {
+                    const theorique = parseFloat(theoriqueInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    ecartInput.value = theorique - realise;
+                    updateHeuresArrets();
+                    fetchDureeArretAndUpdateC(); // <-- Ajoute ici pour recalculer C à chaque changement d'écart
+                }
+        
+                function updateTRS() {
+                    const theorique = parseFloat(theoriqueInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    trsInput.value = theorique > 0 ? ((realise / theorique) * 100).toFixed(2) : 0;
+                }
+        
+                function updateTempsProductif() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const realise = parseFloat(realiseInput.value) || 0;
+                    tempsProductifInput.value = cadence > 0 ? (realise / cadence).toFixed(2) : 0;
+                }
+        
+                function updateHeuresArrets() {
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    const ecart = parseFloat(ecartInput.value) || 0;
+                    heuresArretsInput.value = cadence > 0 ? (ecart / cadence).toFixed(2) : 0;
+                }
+        
+                function fetchDureeArretAndUpdateC() {
+                    const date = dateInput.value;
+                    const faction = factionSelect.value;
+                    if (date && faction) {
+                        fetch(`/ajax/get_duree_arret_by_date_quart_pet/?date=${date}&faction=${faction}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                dureeArret = parseFloat(data.duree_arret) || 0;
+                                updateC();
+                            });
+                    } else {
+                        dureeArret = 0;
+                        updateC();
+                    }
+                }
+        
+                function updateC() {
+                    const ecart = parseFloat(ecartInput.value) || 0;
+                    const cadence = parseFloat(cadenceInput.value) || 0;
+                    if (cadence > 0) {
+                        cInput.value = (((ecart / cadence) * 60) - dureeArret).toFixed(2);
+                    } else {
+                        cInput.value = '';
+                    }
+                }
+        
+                // Listeners pour calculs automatiques
+                if (tempsBrutInput && tempsProgrammeInput && tempsNonProgrammeInput) {
+                    tempsBrutInput.addEventListener('input', updateTempsNonProgramme);
+                    tempsProgrammeInput.addEventListener('input', function() {
+                        updateTempsNonProgramme();
+                        updateTheorique();
+                        updateEcart();
+                        updateTRS();
+                        updateTempsProductif();
+                    });
+                }
+                if (cadenceInput && tempsProgrammeInput && theoriqueInput) {
+                    cadenceInput.addEventListener('input', function() {
+                        updateTheorique();
+                        updateEcart();
+                        updateTRS();
+                        updateTempsProductif();
+                    });
+                }
+                if (theoriqueInput && realiseInput && ecartInput) {
+                    theoriqueInput.addEventListener('input', function() {
+                        updateEcart();
+                        updateTRS();
+                        updateTempsProductif();
+                    });
+                    realiseInput.addEventListener('input', function() {
+                        updateEcart();
+                        updateTRS();
+                        updateTempsProductif();
+                    });
+                }
+                if (cadenceInput && realiseInput && tempsProductifInput) {
+                    cadenceInput.addEventListener('input', updateTempsProductif);
+                    realiseInput.addEventListener('input', updateTempsProductif);
+                }
+                if (cadenceInput && ecartInput && heuresArretsInput) {
+                    cadenceInput.addEventListener('input', updateHeuresArrets);
+                    ecartInput.addEventListener('input', updateHeuresArrets);
+                }
+                // Listeners pour C
+                if (ecartInput && cadenceInput && cInput) {
+                    ecartInput.addEventListener('input', fetchDureeArretAndUpdateC);
+                    cadenceInput.addEventListener('input', fetchDureeArretAndUpdateC);
+                }
+                if (dateInput && factionSelect) {
+                    dateInput.addEventListener('change', fetchDureeArretAndUpdateC);
+                    factionSelect.addEventListener('change', fetchDureeArretAndUpdateC);
+                }
+            }
+        });
+        
+        // Gerer les types d'arrets 
+        document.addEventListener('DOMContentLoaded', function() {
+            const ajoutModal = document.getElementById('ajoutProductionPETModal');
+            if (ajoutModal) {
+                const dateInput = ajoutModal.querySelector('input[name="date"]');
+                const factionSelect = ajoutModal.querySelector('select[name="faction"]');
+                const typeFields = [
+                    {type: 'Intrants', input: ajoutModal.querySelector('input[name="intrants"]')},
+                    {type: 'Technique', input: ajoutModal.querySelector('input[name="technique"]')},
+                    {type: 'Opérationnel', input: ajoutModal.querySelector('input[name="operationnel"]')},
+                    {type: 'Siroperie', input: ajoutModal.querySelector('input[name="siroperie"]')},
+                    {type: 'Utilite', input: ajoutModal.querySelector('input[name="utilite"]')},
+                    {type: 'Espace', input: ajoutModal.querySelector('input[name="espace"]')}
+                ];
+        
+                function fetchAndFillTypeDurations() {
+                    const date = dateInput.value;
+                    const faction = factionSelect.value;
+                    if (date && faction) {
+                        typeFields.forEach(field => {
+                            fetch(`/ajax/get_duree_arret_type_pet/?date=${date}&faction=${faction}&type=${field.type}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(field.type, data); // ← Ajoute ce log
+                                    const duree = parseFloat(data.duree_arret) || 0;
+                                    field.input.value = (duree / 60).toFixed(2);
+                                });
+                        });
+                    } else {
+                        typeFields.forEach(field => {
+                            field.input.value = '';
+                        });
+                    }
+                }
+        
+                if (dateInput && factionSelect) {
+                    dateInput.addEventListener('change', fetchAndFillTypeDurations);
+                    factionSelect.addEventListener('change', fetchAndFillTypeDurations);
+                }
+            }
+        });
+        
+        
+        // Auto-remplissage équipe et ligne dans le formulaire de modification
+        function updateEquipeAndLigneModSelect() {
+            const modModal = document.getElementById('modifierProductionPETModal');
+            if (!modModal) return;
+            const dateInput = modModal.querySelector('#date_mod');
+            const factionSelect = modModal.querySelector('#faction_mod');
+            const equipeSelect = modModal.querySelector('#equipe_mod');
+            const ligneSelect = modModal.querySelector('#ligne_mod');
+        
+            function fetchEquipeAndUpdateSelect() {
+                const date = dateInput.value;
+                const faction = factionSelect.value;
+                if (date && faction) {
+                    fetch(`/ajax/get_equipe_by_date_quart_pet/?date=${date}&faction=${faction}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.equipe_id && data.equipe_nom) {
+                                let option = equipeSelect.querySelector(`option[value="${data.equipe_id}"]`);
+                                if (!option) {
+                                    option = document.createElement('option');
+                                    option.value = data.equipe_id;
+                                    option.textContent = data.equipe_nom;
+                                    equipeSelect.appendChild(option);
+                                }
+                                equipeSelect.value = data.equipe_id;
+                            }
+                        });
+                }
+            }
+        
+            function fetchLigneAndUpdateSelect() {
+                const date = dateInput.value;
+                const faction = factionSelect.value;
+                if (date && faction) {
+                    fetch(`/ajax/get_lignepet_by_date_quart_pet/?date=${date}&faction=${faction}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.ligne_id && ligneSelect) {
+                                ligneSelect.value = data.ligne_id;
+                            }
+                        });
+                }
+            }
+        
+            if (dateInput && factionSelect && equipeSelect && ligneSelect) {
+                dateInput.addEventListener('change', function() {
+                    fetchEquipeAndUpdateSelect();
+                    fetchLigneAndUpdateSelect();
+                });
+                factionSelect.addEventListener('change', function() {
+                    fetchEquipeAndUpdateSelect();
+                    fetchLigneAndUpdateSelect();
+                });
+            }
+        }
+        
+        // Active la fonction au chargement
+        document.addEventListener('DOMContentLoaded', updateEquipeAndLigneModSelect);
+        
+        // Auto-remplissage de la cadence en fonction du format de produit
+        document.addEventListener('DOMContentLoaded', function() {
+            const modModal = document.getElementById('modifierProductionPETModal');
+            if (modModal) {
+                const formatSelect = modModal.querySelector('#format_produit_mod');
+                const cadenceInput = modModal.querySelector('#cadence_mod');
+                if (formatSelect && cadenceInput) {
+                    formatSelect.addEventListener('change', function() {
+                        const format = formatSelect.value;
+                        let cadence = '';
+                        if (format === "25 cl" || format === "33 cl") {
+                            cadence = 24000;
+                        } else if (format === "75 cl") {
+                            cadence = 18000;
+                        } else if (format === "100 cl") {
+                            cadence = 15000;
+                        } else if (format === "200 cl") {
+                            cadence = 7500;
+                        }
+                        cadenceInput.value = cadence;
+                    });
+                }
+            }
+        });
+        // ...existing code...
+        
+        
+
+        // Fonction d'export Excel (placeholder)
+        function exportToExcel() {
+            window.location.href = "{% url 'export_production_pet_excel' %}";
+        }
+
+        // Fonctions pour la sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        }
+
+        function toggleSubmenu(event) {
+            event.preventDefault();
+            const submenu = event.target.closest('li').querySelector('.submenu');
+            const arrow = event.target.closest('a').querySelector('.submenu-arrow');
+            
+            if (submenu && arrow) {
+                if (submenu.style.display === 'block') {
+                    submenu.style.display = 'none';
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    submenu.style.display = 'block';
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+
+        // Fonction pour réinitialiser la sélection
+        function resetSelection() {
+            if (ligneSelectionnee) {
+                ligneSelectionnee.classList.remove('table-active');
+                ligneSelectionnee = null;
+                idProductionSelectionnee = null;
+                document.getElementById('modifierBtn').style.display = 'none';
+                document.getElementById('supprimerBtn').style.display = 'none';
+            }
+        }
+
+        // Configuration des calculs automatiques pour le formulaire d'ajout
+        function setupAutoCalculations() {
+            // Cadence automatique selon le format
+            const formatSelect = document.getElementById('format_produit');
+            const cadenceInput = document.getElementById('cadence');
+
+            if (formatSelect && cadenceInput) {
+                formatSelect.addEventListener('change', function() {
+                    const format = this.value;
+                    switch(format) {
+                        case '25 cl':
+                            cadenceInput.value = 24000;
+                            break;
+                        case '33 cl':
+                            cadenceInput.value = 20000;
+                            break;
+                        case '75 cl':
+                            cadenceInput.value = 16000;
+                            break;
+                        case '100 cl':
+                            cadenceInput.value = 14000;
+                            break;
+                        case '200 cl':
+                            cadenceInput.value = 8000;
+                            break;
+                        default:
+                            cadenceInput.value = '';
+                    }
+                });
+            }
+        }
+
+        // Validation du formulaire
+        function validerFormulaire(form) {
+            const champsObligatoires = form.querySelectorAll('[required]');
+            let valide = true;
+            
+            champsObligatoires.forEach(champ => {
+                if (!champ.value.trim()) {
+                    champ.classList.add('is-invalid');
+                    valide = false;
+                } else {
+                    champ.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!valide) {
+                alert('Veuillez remplir tous les champs obligatoires (marqués par *)');
+            }
+            
+            return valide;
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Masquer les boutons au chargement
+            document.getElementById('modifierBtn').style.display = 'none';
+            document.getElementById('supprimerBtn').style.display = 'none';
+            
+            // Configuration des calculs automatiques
+            setupAutoCalculations();
+            
+            // Ajout de la validation aux formulaires
+            const formsToValidate = [
+                document.querySelector('#ajoutProductionPETModal form'),
+                document.querySelector('#formModifierProductionPET')
+            ];
+            
+            formsToValidate.forEach(form => {
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        if (!validerFormulaire(form)) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+
+            // Réinitialiser la sélection quand on ferme les modals
+            const modals = ['ajoutProductionPETModal', 'modifierProductionPETModal'];
+            modals.forEach(modalId => {
+                const modalElement = document.getElementById(modalId);
+                if (modalElement) {
+                    modalElement.addEventListener('hidden.bs.modal', function() {
+                        resetSelection();
+                        // Nettoyer le formulaire de modification
+                        if (modalId === 'modifierProductionPETModal') {
+                            document.getElementById('formModifierProductionPET').reset();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Gestion des erreurs globales
+        window.addEventListener('error', function(e) {
+            console.error('Erreur JavaScript:', e.error);
+        });
+
+    </script>
+
+</body>
+</html>

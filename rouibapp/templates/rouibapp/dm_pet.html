@@ -1,0 +1,1700 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion DM PET - ROUIBA</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/dm.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+       body {
+    background: url("{% static 'rouibapp/back.png' %}") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+    padding: 0 20px;
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.08);
+    padding: 20px;
+}
+
+.content-body {
+    background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.content-header {
+    background: rgba(34, 139, 34, 0.18);
+    padding: 20px 30px;
+    border-radius: 48px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+    margin-bottom: 30px;
+}
+
+.content-header h1 {
+    color: #111 !important; /* Noir intense */
+    font-weight: bold;
+}
+
+.btn.btn-outline-secondary {
+    color: #111 !important;      /* Noir intense pour le texte */
+    border-color: #111 !important; /* Noir intense pour la bordure */
+    font-weight: bold;
+    background: transparent;
+}
+
+.btn.btn-outline-secondary:hover,
+.btn.btn-outline-secondary:focus {
+    background: #111 !important; /* Fond noir au survol */
+    color: #fff !important;      /* Texte blanc au survol */
+    border-color: #111 !important;
+}
+
+/* BOUTONS FIXES - Solution corrigée */
+.btn-group-custom {
+    position: sticky;
+    top: 0;
+    left: 0;
+
+    z-index: 1000;
+    padding: 15px 20px;
+  
+    margin-bottom: 0;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+}
+
+.btn-group-custom h2 {
+    margin-bottom: 15px;
+    color: #111 !important;
+    font-weight: bold;
+}
+
+.btn-group-custom > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-group-custom .btn {
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-group-custom .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* CONTENEUR TABLE - Modifié pour les boutons fixes */
+.table-container {
+    background: rgba(34, 139, 34, 0.18);
+    border-radius: 0 0 10px 10px; /* Arrondir seulement le bas */
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    border-radius: 48px 48px 48px 48px;
+     box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+    margin-top: 0; /* Supprimer la marge car maintenant collé aux boutons */
+    padding: 0 30px 20px 30px; /* Pas de padding en haut */
+    position: relative;
+}
+
+.table {
+    width: 100%;
+    min-width: 2500px;
+    border-collapse: collapse;
+    margin: 20px 0 0 0; /* Espace entre les boutons et le tableau */
+    font-size: 11px;
+}
+
+.table th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border: 1px solid #34495e;
+    padding: 8px 4px;
+    text-align: center;
+    vertical-align: middle;
+    min-width: 81px;
+}
+
+.table td {
+    border: 1px solid #ddd;
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tbody tr:hover {
+    background-color: #e3f2fd;
+    cursor: pointer;
+}
+
+.table-active {
+    background-color: #cce5ff !important;
+    animation: highlightRow 0.3s ease-in-out;
+}
+
+@keyframes highlightRow {
+    0% { background-color: #fff; }
+    50% { background-color: #007bff; }
+    100% { background-color: #cce5ff; }
+}
+
+.group-base { background-color: #e8f5e8; }
+.group-personnel { background-color: #fff3cd; }
+.group-pertes { background-color: #f8d7da; }
+.group-arrets { background-color: #d4edda; }
+.group-totaux { background-color: #d1ecf1; }
+
+.modal-xl {
+    max-width: 95%;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.form-group-small {
+    flex: 1;
+    min-width: 150px;
+}
+
+.section-title {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-left: 4px solid #155724;
+    margin: 20px 0 15px 0;
+    font-weight: bold;
+    color: #495057;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #f5f5f5;
+}
+
+.pagination .current {
+    background-color: #007cba;
+    color: white;
+    border-color: #007cba;
+}
+
+.pagination .disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 12px;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.table th {
+    background-color: #2c3e50;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.pagination-info {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.per-page-selector {
+    text-align: center; 
+    margin: 20px 0;
+}
+
+.per-page-selector select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.logo-rouiba {
+    display: block;
+    margin: 0 auto 5px auto;
+    width: 100px;
+    height: auto;
+}
+
+/* Conteneur global */
+.container-fluid.mt-4 {
+    padding: 0 20px;
+}
+
+/* Responsive: Ajustement pour les petits écrans */
+@media (max-width: 768px) {
+    .btn-group-custom {
+        padding: 10px 15px;
+    }
+    
+    .btn-group-custom > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-group-custom .btn {
+        margin-bottom: 5px;
+        margin-right: 0;
+    }
+    
+    .table-container {
+        padding: 0 15px 15px 15px;
+    }
+    
+    .container-fluid.mt-4 {
+        padding: 0 10px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="toggleIcon"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" 
+                alt="Logo Rouiba" 
+                class="logo-rouiba">
+            <small>Panel d'administration</small>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+            <li><a href="{% url 'statistiques' %}"><i class="fas fa-chart-bar"></i><span>Statistiques</span></a></li>
+            <li><a href="{% url 'equipe' %}"><i class="fas fa-users"></i><span>Équipes</span></a></li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)" class="active">
+                    <i class="fas fa-box"></i><span>Produits</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                   <li><a href="{% url 'carton' %}"><span>Carton</span></a></li>
+                    <li><a href="{% url 'PET' %}"><span>PET</span></a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content" id="mainContent">
+        <div class="content-header">
+            <h1><i class="fas fa-cogs"></i> Gestion DM PET (Disponibilité Machine)</h1>
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'PET' %}">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleTableBtn">
+                        <i class="fas fa-table"></i> Afficher la table d'Arrêt PET
+                    </button>
+                </a>
+                <a href="{% url 'production_pet' %}">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleDMBtn">
+                        <i class="fas fa-table"></i> Afficher la table de Production PET
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tableau des DM PET -->
+        <div class="container-fluid mt-4">
+            <div class="table-container">
+                <div class="btn-group-custom">
+                    <h2>Liste des DM PET</h2>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ajoutDMModal">
+                        <i class="fas fa-plus"></i> Ajouter DM PET
+                    </button>
+                    <button type="button" class="btn btn-primary" id="modifierBtn" style="display: none;">
+                        <i class="fas fa-edit"></i> Modifier
+                    </button>
+                    <button type="button" class="btn btn-danger" id="supprimerBtn" style="display: none;">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="group-base">Date</th>
+                            <th class="group-base">Ligne</th>
+                            <th class="group-base">Temps d'arrêt</th>
+                            <th class="group-base">Nombre d'Arrêt</th>
+                            <th class="group-arrets">MTBF</th>
+                            <th class="group-arrets">MTTR</th>
+                            <th class="group-totaux">DS</th>
+                            <th class="group-totaux">DE</th>
+                            <th class="group-totaux">DM</th>
+                            <th class="group-totaux">TRS</th>
+                            <th class="group-totaux">TRG</th>
+                            <th class="group-pertes">Perte %</th>
+                            <th class="group-pertes">Perte</th>
+                            <th class="group-base">Réalisé</th>
+                            <th class="group-base">Prévu</th>
+                            <th class="group-base">Cadence</th>
+                            <th class="group-base">HK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dm in dms %}
+                        <tr onclick="selectionnerLigne(this)" 
+                            data-dm-id="{{ dm.id_dm }}" 
+                            data-ligne-id="{{ dm.ligne.id_ligne }}"
+                            data-date="{{ dm.date_dm|date:'Y-m-d' }}"
+                            data-temps-arret="{{ dm.duree_arret }}"
+                            data-nbr-arret="{{ dm.nbr_arret }}"
+                            data-mtbf="{{ dm.MTBF }}"
+                            data-mttr="{{ dm.MTTR }}"
+                            data-ds="{{ dm.DS }}"
+                            data-de="{{ dm.DE }}"
+                            data-dm="{{ dm.DM }}"
+                            data-trs="{{ dm.TRS }}"
+                            data-trg="{{ dm.TRG }}"
+                            data-perte-pourcentage="{{ dm.perte_pourcentage }}"
+                            data-perte="{{ dm.perte }}"
+                            data-realise="{{ dm.realise }}"
+                            data-prevu="{{ dm.Prevu }}"
+                            data-cadence="{{ dm.cadence }}"
+                            data-hk="{{ dm.HK }}"
+                            data-duree-arret-programme="{{ dm.duree_arret_programme|default_if_none:'0' }}"
+                            data-temps-requis="{{ dm.temps_requis }}"
+                            data-siroperie="{{ dm.siroperie }}"
+                            data-utilite="{{ dm.utilite }}"
+                            data-taux-panne="{{ dm.taux_panne }}"
+                            data-tu="{{ dm.TU }}"
+                            data-tubis="{{ dm.TUBIS }}"
+                            data-trp="{{ dm.TRP }}"
+                            data-trl="{{ dm.TRL }}"
+                            data-tro="{{ dm.TRO }}"
+                            data-tre="{{ dm.TRE }}"
+                            
+                            style="cursor: pointer;">
+                            
+                            <td>{{ dm.date_dm|date:"d/m/Y" }}</td>
+                            <td>{{ dm.ligne.nom_ligne|default:"-" }}</td>
+                            <td>{{ dm.duree_arret|floatformat:2 }}</td>
+                            <td>{{ dm.nbr_arret }}</td>
+                            <td>{{ dm.MTBF|floatformat:2 }}</td>
+                            <td>{{ dm.MTTR|floatformat:2 }}</td>
+                            <td>{{ dm.DS|floatformat:2 }}%</td>
+                            <td>{{ dm.DE|floatformat:2 }}%</td>
+                            <td>{{ dm.DM|floatformat:2 }}%</td>
+                            <td>{{ dm.TRS|floatformat:2 }}%</td>
+                            <td>{{ dm.TRG|floatformat:2 }}%</td>
+                            <td>{{ dm.perte_pourcentage|floatformat:2 }}%</td>
+                            <td>{{ dm.perte|floatformat:2|default:"-" }}</td>
+                            <td>{{ dm.realise|floatformat:2|default:"-" }}</td>
+                            <td>{{ dm.Prevu|floatformat:2 }}</td>
+                            <td>{{ dm.cadence|floatformat:2|default:"-" }}</td>
+                            <td>{{ dm.HK|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="17" class="text-center text-muted">
+                                <i class="fas fa-inbox"></i> Aucune donnée DM PET disponible.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'ajout -->
+    <div class="modal fade" id="ajoutDMModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="post" action="{% url 'ajouter_dm_pet' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-plus-circle"></i> Ajouter un DM PET
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="section-title"> Informations de Base</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Date </label>
+                                <input type="date" class="form-control" id="date_dm" name="date_dm" required>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ligne </label>
+                                <select class="form-control" id="ligne" name="ligne" required>
+                                    <option value="">-- Sélectionner une ligne --</option>
+                                    {% for l in lignes %}
+                                    <option value="{{ l.id_ligne }}">{{ l.nom_ligne }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Nombre d'arrêt</label>
+                                <input type="number" class="form-control" id="nbr_arret" name="nbr_arret" required>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Temps et Durées</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps d'arrêt</label>
+                                <input type="number" step="any" id="temps_arret" name="temps_arret" class="form-control" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Durée d'arrêt programmé</label>
+                                <input type="number" step="any" id="duree_arret_programme" name="duree_arret_programme" class="form-control" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps requis</label>
+                                <input type="number" step="any" id="temps_requis" name="temps_requis" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Données Techniques</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Siroperie</label>
+                                <input type="number" step="any" class="form-control" id="siroperie" name="siroperie" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Utilité</label>
+                                <input type="number" step="any" class="form-control" id="utilite" name="utilite" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Cadence</label>
+                                <input type="number" step="any" class="form-control" id="cadence" name="cadence" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Indicateurs de Performance</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">MTBF</label>
+                                <input type="number" step="any" class="form-control" id="MTBF" name="MTBF" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">MTTR</label>
+                                <input type="number" step="any" class="form-control" id="MTTR" name="MTTR" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Taux de panne</label>
+                                <input type="number" step="any" class="form-control" id="taux_panne" name="taux_panne" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DS (%)</label>
+                                <input type="number" step="any" class="form-control" id="DS" name="DS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DE (%)</label>
+                                <input type="number" step="any" class="form-control" id="DE" name="DE" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DM (%)</label>
+                                <input type="number" step="any" class="form-control" id="DM" name="DM" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Taux de Rendement</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRS (%)</label>
+                                <input type="number" step="any" class="form-control" id="TRS" name="TRS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRG (%)</label>
+                                <input type="number" step="any" class="form-control" id="TRG" name="TRG" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TU</label>
+                                <input type="number" step="any" class="form-control" id="TU" name="TU" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TUBIS</label>
+                                <input type="number" step="any" class="form-control" id="TUBIS" name="TUBIS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRP</label>
+                                <input type="number" step="any" class="form-control" id="TRP" name="TRP" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRL</label>
+                                <input type="number" step="any" class="form-control" id="TRL" name="TRL" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRO</label>
+                                <input type="number" step="any" class="form-control" id="TRO" name="TRO" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRE</label>
+                                <input type="number" step="any" class="form-control" id="TRE" name="TRE" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Production et Pertes</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Perte</label>
+                                <input type="number" step="any" class="form-control" id="perte" name="perte" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Perte (%)</label>
+                                <input type="number" step="any" class="form-control" id="perte_pourcentage" name="perte_pourcentage" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Réalisé</label>
+                                <input type="number" step="any" class="form-control" id="realise" name="realise" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Prévu</label>
+                                <input type="number" step="any" class="form-control" id="Prevu" name="Prevu" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">HK</label>
+                                <input type="number" step="any" class="form-control" id="HK" name="HK" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de modification -->
+    <div class="modal fade" id="modifierDMModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form id="formModifierDM" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-edit"></i> Modifier DM PET
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="section-title"> Informations de Base</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Date</label>
+                                <input type="date" class="form-control" id="date_dm_modif" name="date_dm">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ligne</label>
+                                <select class="form-control" id="ligne_modif" name="ligne">
+                                    <option value="">-- Sélectionner une ligne --</option>
+                                    {% for l in lignes %}
+                                    <option value="{{ l.id_ligne }}">{{ l.nom_ligne }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Nombre d'arrêt</label>
+                                <input type="number" class="form-control" id="nbr_arret_modif" name="nbr_arret">
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Temps et Durées</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps d'arrêt</label>
+                                <input type="number" step="any" id="temps_arret_modif" name="temps_arret" class="form-control" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Durée d'arrêt programmé</label>
+                                <input type="number" step="any" id="duree_arret_programme_modif" name="duree_arret_programme" class="form-control" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Temps requis</label>
+                                <input type="number" step="any" id="temps_requis_modif" name="temps_requis" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Données Techniques</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Siroperie</label>
+                                <input type="number" step="any" class="form-control" id="siroperie_modif" name="siroperie" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Utilité</label>
+                                <input type="number" step="any" class="form-control" id="utilite_modif" name="utilite" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Cadence</label>
+                                <input type="number" step="any" class="form-control" id="cadence_modif" name="cadence" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Indicateurs de Performance</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">MTBF</label>
+                                <input type="number" step="any" class="form-control" id="MTBF_modif" name="MTBF" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">MTTR</label>
+                                <input type="number" step="any" class="form-control" id="MTTR_modif" name="MTTR" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Taux de panne</label>
+                                <input type="number" step="any" class="form-control" id="taux_panne_modif" name="taux_panne" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DS (%)</label>
+                                <input type="number" step="any" class="form-control" id="DS_modif" name="DS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DE (%)</label>
+                                <input type="number" step="any" class="form-control" id="DE_modif" name="DE" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">DM (%)</label>
+                                <input type="number" step="any" class="form-control" id="DM_modif" name="DM" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Taux de Rendement</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRS (%)</label>
+                                <input type="number" step="any" class="form-control" id="TRS_modif" name="TRS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRG (%)</label>
+                                <input type="number" step="any" class="form-control" id="TRG_modif" name="TRG" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TU</label>
+                                <input type="number" step="any" class="form-control" id="TU_modif" name="TU" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TUBIS</label>
+                                <input type="number" step="any" class="form-control" id="TUBIS_modif" name="TUBIS" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRP</label>
+                                <input type="number" step="any" class="form-control" id="TRP_modif" name="TRP" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRL</label>
+                                <input type="number" step="any" class="form-control" id="TRL_modif" name="TRL" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRO</label>
+                                <input type="number" step="any" class="form-control" id="TRO_modif" name="TRO" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">TRE</label>
+                                <input type="number" step="any" class="form-control" id="TRE_modif" name="TRE" readonly>
+                            </div>
+                        </div>
+
+                        <div class="section-title"> Production et Pertes</div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Perte</label>
+                                <input type="number" step="any" class="form-control" id="perte_modif" name="perte" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Perte (%)</label>
+                                <input type="number" step="any" class="form-control" id="perte_pourcentage_modif" name="perte_pourcentage" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Réalisé</label>
+                                <input type="number" step="any" class="form-control" id="realise_modif" name="realise" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Prévu</label>
+                                <input type="number" step="any" class="form-control" id="Prevu_modif" name="Prevu" readonly>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">HK</label>
+                                <input type="number" step="any" class="form-control" id="HK_modif" name="HK" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Fermer
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script>
+        // Variables globales pour la gestion de sélection
+        let ligneSelectionnee = null;
+        let idDMSelectionnee = null;
+
+        // Fonction pour sélectionner une ligne
+        function selectionnerLigne(ligne) {
+            console.log('Ligne DM PET cliquée');
+            
+            // Retirer la sélection précédente
+            if (ligneSelectionnee) {
+                ligneSelectionnee.classList.remove('table-active');
+            }
+            
+            // Sélectionner la nouvelle ligne
+            ligne.classList.add('table-active');
+            ligneSelectionnee = ligne;
+            idDMSelectionnee = ligne.dataset.dmId;
+            
+            console.log('DM PET sélectionné:', idDMSelectionnee);
+            
+            // Afficher les boutons
+            const modifierBtn = document.getElementById('modifierBtn');
+            const supprimerBtn = document.getElementById('supprimerBtn');
+            
+            if (modifierBtn) modifierBtn.style.display = 'inline-block';
+            if (supprimerBtn) supprimerBtn.style.display = 'inline-block';
+        }
+
+        // Fonction pour modifier un DM PET
+        function modifierDM() {
+            if (!idDMSelectionnee || !ligneSelectionnee) {
+                alert('Veuillez sélectionner une ligne à modifier.');
+                return;
+            }
+
+            try {
+                console.log('Modification DM PET:', idDMSelectionnee);
+                
+                // Récupérer les données de la ligne sélectionnée
+                const data = ligneSelectionnee.dataset;
+                const cells = ligneSelectionnee.getElementsByTagName('td');
+                
+                // Fonction pour convertir date dd/mm/yyyy vers yyyy-mm-dd
+                function formatDateForInput(dateText) {
+                    if (!dateText || dateText === '-') return '';
+                    const parts = dateText.split('/');
+                    if (parts.length === 3) {
+                        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                    }
+                    return dateText;
+                }
+                
+                // Fonction pour nettoyer les valeurs (enlever % et autres caractères)
+                function cleanValue(value) {
+                    if (!value || value === '-') return '';
+                    return value.toString().replace('%', '').trim();
+                }
+                
+                // Pré-remplir le formulaire de modification
+                document.getElementById('date_dm_modif').value = formatDateForInput(cells[0].textContent);
+                document.getElementById('ligne_modif').value = data.ligneId || '';
+                document.getElementById('temps_arret_modif').value = cleanValue(cells[2].textContent);
+                document.getElementById('nbr_arret_modif').value = cleanValue(cells[3].textContent);
+                document.getElementById('MTBF_modif').value = cleanValue(cells[4].textContent);
+                document.getElementById('MTTR_modif').value = cleanValue(cells[5].textContent);
+                document.getElementById('DS_modif').value = cleanValue(cells[6].textContent);
+                document.getElementById('DE_modif').value = cleanValue(cells[7].textContent);
+                document.getElementById('DM_modif').value = cleanValue(cells[8].textContent);
+                document.getElementById('TRS_modif').value = cleanValue(cells[9].textContent);
+                document.getElementById('TRG_modif').value = cleanValue(cells[10].textContent);
+                document.getElementById('perte_pourcentage_modif').value = cleanValue(cells[11].textContent);
+                document.getElementById('perte_modif').value = cleanValue(cells[12].textContent);
+                document.getElementById('realise_modif').value = cleanValue(cells[13].textContent);
+                document.getElementById('Prevu_modif').value = cleanValue(cells[14].textContent);
+                document.getElementById('cadence_modif').value = cleanValue(cells[15].textContent);
+                document.getElementById('HK_modif').value = cleanValue(cells[16].textContent);
+                console.log('Durée arrêt programme:', ligneSelectionnee.dataset.dureeArretProgramme);
+                document.getElementById('duree_arret_programme_modif').value = ligneSelectionnee.dataset.dureeArretProgramme || '';
+                document.getElementById('temps_requis_modif').value = ligneSelectionnee.dataset.tempsRequis || '';
+                document.getElementById('siroperie_modif').value = ligneSelectionnee.dataset.siroperie || '';
+                document.getElementById('utilite_modif').value = ligneSelectionnee.dataset.utilite || '';
+                document.getElementById('cadence_modif').value = ligneSelectionnee.dataset.cadence || '';
+                document.getElementById('taux_panne_modif').value = ligneSelectionnee.dataset.tauxPanne || '';
+                document.getElementById('TU_modif').value = ligneSelectionnee.dataset.tu || '';
+                document.getElementById('TUBIS_modif').value = ligneSelectionnee.dataset.tubis || '';
+                document.getElementById('TRP_modif').value = ligneSelectionnee.dataset.trp || '';
+                document.getElementById('TRL_modif').value = ligneSelectionnee.dataset.trl || '';
+                document.getElementById('TRO_modif').value = ligneSelectionnee.dataset.tro || '';
+                document.getElementById('TRE_modif').value = ligneSelectionnee.dataset.tre || '';
+                
+                // Définir l'action du formulaire
+                document.getElementById('formModifierDM').action = `/modifier_dm_pet/${idDMSelectionnee}/`;
+                
+                // Afficher le modal
+                const modal = new bootstrap.Modal(document.getElementById('modifierDMModal'));
+                modal.show();
+
+                // Récupérer la durée d'arrêt programmée
+                const date = document.getElementById('date_dm_modif').value;
+                const ligne = document.getElementById('ligne_modif').value;
+                fetch(`/get_duree_arret_programme_dm_pet/?date=${date}&ligne=${ligne}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('duree_arret_programme_modif').value = data.duree_arret_programme || 0;
+                        // Tu peux aussi recalculer le temps requis ici si besoin
+                    });
+                // Ajoute ce code dans la fonction modifierDM(), juste après modal.show()
+                document.getElementById('nbr_arret_modif').addEventListener('input', updateAllCalculsModif);
+                document.getElementById('nbr_arret_modif').addEventListener('change', updateAllCalculsModif);
+                
+            } catch (error) {
+                console.error('Erreur lors de la modification:', error);
+                alert('Erreur lors de la préparation de la modification.');
+            }
+        }
+        
+        // Fonction pour recalculer tous les champs en temps réel
+        function updateAllCalculsModif() {
+            // Récupère les éléments du modal de modification
+            const dureeInput = document.getElementById('duree_arret_programme_modif');
+            const tempsArretInput = document.getElementById('temps_arret_modif');
+            const nbrArretInput = document.getElementById('nbr_arret_modif');
+            const cadenceInput = document.getElementById('cadence_modif');
+            const tempsRequisInput = document.getElementById('temps_requis_modif');
+            const siroperieInput = document.getElementById('siroperie_modif');
+            const utiliteInput = document.getElementById('utilite_modif');
+            const realiseInput = document.getElementById('realise_modif');
+            const prevuInput = document.getElementById('Prevu_modif');
+            const mtbfInput = document.getElementById('MTBF_modif');
+            const mttrInput = document.getElementById('MTTR_modif');
+            const dsInput = document.getElementById('DS_modif');
+            const deInput = document.getElementById('DE_modif');
+            const dmInput = document.getElementById('DM_modif');
+            const trsInput = document.getElementById('TRS_modif');
+            const trgInput = document.getElementById('TRG_modif');
+            const tuInput = document.getElementById('TU_modif');
+            const tubisInput = document.getElementById('TUBIS_modif');
+            const trpInput = document.getElementById('TRP_modif');
+            const trlInput = document.getElementById('TRL_modif');
+            const troInput = document.getElementById('TRO_modif');
+            const treInput = document.getElementById('TRE_modif');
+            const perteInput = document.getElementById('perte_modif');
+            const pertePourcentageInput = document.getElementById('perte_pourcentage_modif');
+            const hkInput = document.getElementById('HK_modif');
+            const tauxPanneInput = document.getElementById('taux_panne_modif');
+        
+            // Calculs
+            const duree = parseFloat(dureeInput.value) || 0;
+            const tempsArret = parseFloat(tempsArretInput.value) || 0;
+            const nbrArret = parseFloat(nbrArretInput.value) || 0;
+            const cadence = parseFloat(cadenceInput.value) || 0;
+            const siroperie = parseFloat(siroperieInput.value) || 0;
+            const utilite = parseFloat(utiliteInput.value) || 0;
+            const realise = parseFloat(realiseInput.value) || 0;
+            const perte = parseFloat(perteInput.value) || 0;
+        
+            // Temps requis
+            const tempsRequis = 1440 - duree;
+            tempsRequisInput.value = tempsRequis.toFixed(2);
+        
+            // MTBF
+            let mtbf = '';
+            if (nbrArret > 0) {
+                mtbf = ((tempsRequis - tempsArret) / nbrArret).toFixed(2);
+            }
+            mtbfInput.value = mtbf;
+        
+            // MTTR
+            let mttr = '';
+            if (nbrArret > 0) {
+                mttr = (tempsArret / nbrArret).toFixed(2);
+            }
+            mttrInput.value = mttr;
+        
+            // Taux de panne
+            let tauxPanne = '';
+            if ((parseFloat(mttr) + parseFloat(mtbf)) > 0) {
+                tauxPanne = (parseFloat(mttr) / (parseFloat(mttr) + parseFloat(mtbf))).toFixed(4);
+            }
+            tauxPanneInput.value = tauxPanne;
+        
+            // DM
+            let dm = '';
+            if ((parseFloat(mttr) + parseFloat(mtbf)) > 0) {
+                dm = (parseFloat(mtbf) / (parseFloat(mttr) + parseFloat(mtbf))).toFixed(4);
+            }
+            dmInput.value = dm;
+        
+            // Prévu
+            let prevu = '';
+            if (cadence > 0) {
+                prevu = ((tempsRequis / 60) * cadence).toFixed(2);
+            }
+            prevuInput.value = prevu;
+        
+            // DS
+            let ds = '';
+            if (tempsRequis > 0) {
+                ds = (100 - (siroperie / tempsRequis)).toFixed(2);
+            }
+            dsInput.value = ds;
+        
+            // DE
+            let de = '';
+            de = (100 - (utilite / 1440)).toFixed(2);
+            deInput.value = de;
+        
+            // TRS
+            let trs = '';
+            if (parseFloat(prevu) > 0) {
+                trs = ((realise / parseFloat(prevu)) * 100).toFixed(2);
+            }
+            trsInput.value = trs;
+        
+            // Perte pourcentage
+            let pertePourcentage = '';
+            if (realise > 0) {
+                pertePourcentage = ((perte / realise) * 100).toFixed(2);
+            }
+            pertePourcentageInput.value = pertePourcentage;
+        
+            // HK
+            hkInput.value = ((realise * 2) / 100).toFixed(2);
+        
+            // TU
+            let tu = '';
+            if (cadence > 0) {
+                tu = ((realise / cadence) * 60).toFixed(2);
+            }
+            tuInput.value = tu;
+        
+            // TUBIS
+            let tubis = '';
+            if (cadence > 0) {
+                tubis = ((realise / cadence) * 60).toFixed(2);
+            }
+            tubisInput.value = tubis;
+        
+            // TRP
+            let trp = '';
+            if (tempsRequis > 0) {
+                trp = (parseFloat(tu) / tempsRequis).toFixed(2);
+            }
+            trpInput.value = trp;
+        
+            // TRL
+            let trl = '';
+            if (tempsRequis > 0) {
+                trl = (parseFloat(tubis) / tempsRequis).toFixed(2);
+            }
+            trlInput.value = trl;
+        
+            // TRO
+            let tro = '';
+            const denomTRO = tempsRequis + duree;
+            if (denomTRO > 0) {
+                tro = (parseFloat(tubis) / denomTRO).toFixed(2);
+            }
+            troInput.value = tro;
+        
+            // TRE
+            let tre = '';
+            tre = (parseFloat(tu) / 1440).toFixed(2);
+            treInput.value = tre;
+        
+            // TRG
+            let trg = '';
+            const denomTRG = tempsRequis + duree;
+            if (denomTRG > 0) {
+                trg = (parseFloat(tu) / denomTRG).toFixed(2);
+            }
+            trgInput.value = trg;
+        }
+
+        // Fonction pour supprimer un DM PET
+        function supprimerDM() {
+            if (!idDMSelectionnee || !ligneSelectionnee) {
+                alert('Veuillez sélectionner une ligne à supprimer.');
+                return;
+            }
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce DM PET ? Cette action est irréversible.')) {
+                // Envoyer une requête AJAX pour supprimer
+                const formData = new FormData();
+                formData.append('id', idDMSelectionnee);
+                
+                fetch(`/supprimer-dm-pet/${idDMSelectionnee}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Rediriger vers la page DM PET
+                        window.location.href = '/dm-pet/';
+                    } else {
+                        alert('Erreur lors de la suppression: ' + (data.error || 'Erreur inconnue'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la suppression');
+                });
+            }
+        }
+
+        // Fonction pour réinitialiser la sélection
+        function resetSelection() {
+            if (ligneSelectionnee) {
+                ligneSelectionnee.classList.remove('table-active');
+            }
+            ligneSelectionnee = null;
+            idDMSelectionnee = null;
+            
+            document.getElementById('modifierBtn').style.display = 'none';
+            document.getElementById('supprimerBtn').style.display = 'none';
+        }
+
+        // Fonction utilitaire pour récupérer le CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Fonction d'export Excel (placeholder)
+        function exportToExcel() {
+            window.location.href = "{% url 'export_dm_pet_excel' %}";
+        }
+
+        // Event listeners pour les boutons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bouton modifier
+            const modifierBtn = document.getElementById('modifierBtn');
+            if (modifierBtn) {
+                modifierBtn.addEventListener('click', modifierDM);
+            }
+            
+            // Bouton supprimer
+            const supprimerBtn = document.getElementById('supprimerBtn');
+            if (supprimerBtn) {
+                supprimerBtn.addEventListener('click', supprimerDM);
+            }
+            
+            // Cacher les boutons si on clique ailleurs
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.table') && 
+                    !e.target.closest('#modifierBtn') && 
+                    !e.target.closest('#supprimerBtn')) {
+                    resetSelection();
+                }
+            });
+        });
+
+        document.getElementById('formModifierDM').addEventListener('submit', function(e) {
+            e.preventDefault(); // Empêche le rechargement de la page
+        
+            const form = e.target;
+            const formData = new FormData(form);
+        
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Ferme le modal
+                    bootstrap.Modal.getInstance(document.getElementById('modifierDMModal')).hide();
+                    // Optionnel : rafraîchir le tableau ou afficher un message
+                    location.reload(); // ou rafraîchir dynamiquement le tableau
+                } else {
+                    alert('Erreur lors de la modification : ' + (data.error || 'Erreur inconnue'));
+                }
+            })
+            .catch(error => {
+                alert('Erreur AJAX : ' + error);
+            });
+        });
+
+        // ===============================
+        // SCRIPTS POUR LE MODAL D'AJOUT
+        // ===============================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inputs
+            const dateInput = document.getElementById('date_dm');
+            const ligneSelect = document.getElementById('ligne');
+            const tempsArretInput = document.getElementById('temps_arret');
+            const dureeInput = document.getElementById('duree_arret_programme');
+            const siroperieInput = document.getElementById('siroperie');
+            const utiliteInput = document.getElementById('utilite');
+            const trgInput = document.getElementById('TRG');
+            const perteInput = document.getElementById('perte');
+            const realiseInput = document.getElementById('realise');
+            const pertePourcentageInput = document.getElementById('perte_pourcentage');
+            const hkInput = document.getElementById('HK');
+            const cadenceInput = document.getElementById('cadence');
+            const trsInput = document.getElementById('TRS');
+            const tempsRequisInput = document.getElementById('temps_requis');
+            const nbrArretInput = document.getElementById('nbr_arret');
+            const mtbfInput = document.getElementById('MTBF');
+            const mttrInput = document.getElementById('MTTR');
+            const prevuInput = document.getElementById('Prevu');
+            const dsInput = document.getElementById('DS');
+            const deInput = document.getElementById('DE');
+            const tuInput = document.getElementById('TU');
+            const tubisInput = document.getElementById('TUBIS');
+            const trpInput = document.getElementById('TRP');
+            const trlInput = document.getElementById('TRL');
+            const troInput = document.getElementById('TRO');
+            const treInput = document.getElementById('TRE');
+        
+            // --- Fetchs AJAX ---
+            function fetchPrevu() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_prevu_dm_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            prevuInput.value = data.prevu || 0;
+                        })
+                        .catch(() => {
+                            prevuInput.value = '';
+                        });
+                } else {
+                    prevuInput.value = '';
+                }
+            }
+
+            if (dateInput && ligneSelect && prevuInput) {
+                dateInput.addEventListener('change', fetchPrevu);
+                ligneSelect.addEventListener('change', fetchPrevu);
+            }
+            function fetchTempsArret() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_temps_arret_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            tempsArretInput.value = data.temps_arret || 0;
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            tempsArretInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    tempsArretInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchTempsArret);
+            ligneSelect.addEventListener('change', fetchTempsArret);
+        
+            function fetchDureeArretProgramme() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_duree_arret_programme_dm_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            dureeInput.value = data.duree_arret_programme || 0;
+                            dureeInput.dispatchEvent(new Event('input'));
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            dureeInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    dureeInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchDureeArretProgramme);
+            ligneSelect.addEventListener('change', fetchDureeArretProgramme);
+        
+            function fetchSiroperie() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_siroperie_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            siroperieInput.value = data.siroperie || 0;
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            siroperieInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    siroperieInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchSiroperie);
+            ligneSelect.addEventListener('change', fetchSiroperie);
+        
+            function fetchUtilite() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_utilite_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            utiliteInput.value = data.utilite || 0;
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            utiliteInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    utiliteInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchUtilite);
+            ligneSelect.addEventListener('change', fetchUtilite);
+
+            function fetchTRS() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_trs_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            trsInput.value = data.trs || '';
+                            window.afterDataFetch && window.afterDataFetch();
+                        })
+                        .catch(() => {
+                            trsInput.value = '';
+                            window.afterDataFetch && window.afterDataFetch();
+                        });
+                } else {
+                    trsInput.value = '';
+                    window.afterDataFetch && window.afterDataFetch();
+                }
+            }
+            dateInput.addEventListener('change', fetchTRS);
+            ligneSelect.addEventListener('change', fetchTRS);
+        
+            function fetchTRG() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_trg_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            trgInput.value = data.trg || 0;
+                        })
+                        .catch(() => {
+                            trgInput.value = '';
+                        });
+                } else {
+                    trgInput.value = '';
+                }
+            }
+            dateInput.addEventListener('change', fetchTRG);
+            ligneSelect.addEventListener('change', fetchTRG);
+        
+            function fetchPerte() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_perte_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            perteInput.value = data.perte || 0;
+                        })
+                        .catch(() => {
+                            perteInput.value = '';
+                        });
+                } else {
+                    perteInput.value = '';
+                }
+            }
+            dateInput.addEventListener('change', fetchPerte);
+            ligneSelect.addEventListener('change', fetchPerte);
+        
+            function fetchRealise() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_realise_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            realiseInput.value = data.realise || 0;
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            realiseInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    realiseInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchRealise);
+            ligneSelect.addEventListener('change', fetchRealise);
+        
+            function fetchPertePourcentage() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_perte_pourcentage_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            pertePourcentageInput.value = data.perte_pourcentage || 0;
+                        })
+                        .catch(() => {
+                            pertePourcentageInput.value = '';
+                        });
+                } else {
+                    pertePourcentageInput.value = '';
+                }
+            }
+            dateInput.addEventListener('change', fetchPertePourcentage);
+            ligneSelect.addEventListener('change', fetchPertePourcentage);
+        
+            function fetchHK() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_hk_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            hkInput.value = data.hk || 0;
+                        })
+                        .catch(() => {
+                            hkInput.value = '';
+                        });
+                } else {
+                    hkInput.value = '';
+                }
+            }
+            dateInput.addEventListener('change', fetchHK);
+            ligneSelect.addEventListener('change', fetchHK);
+        
+            function fetchCadence() {
+                const date = dateInput.value;
+                const ligne = ligneSelect.value;
+                if (date && ligne) {
+                    fetch(`/get_cadence_pet/?date=${date}&ligne=${ligne}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            cadenceInput.value = data.cadence || 0;
+                            updateAllCalculs();
+                        })
+                        .catch(() => {
+                            cadenceInput.value = '';
+                            updateAllCalculs();
+                        });
+                } else {
+                    cadenceInput.value = '';
+                    updateAllCalculs();
+                }
+            }
+            dateInput.addEventListener('change', fetchCadence);
+            ligneSelect.addEventListener('change', fetchCadence);
+        
+            // --- Calculs automatiques ---
+            function updateTempsRequis() {
+                const duree = parseFloat(dureeInput.value) || 0;
+                const tempsRequis = 1440 - duree;
+                tempsRequisInput.value = tempsRequis.toFixed(2);
+            }
+        
+            function updateMTBF() {
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                const tempsArret = parseFloat(tempsArretInput.value) || 0;
+                const nbrArret = parseFloat(nbrArretInput.value) || 0;
+                let mtbf = '';
+                if (nbrArret > 0) {
+                    mtbf = ((tempsRequis - tempsArret) / nbrArret).toFixed(2);
+                }
+                mtbfInput.value = mtbf;
+            }
+        
+            function updateMTTR() {
+                const tempsArret = parseFloat(tempsArretInput.value) || 0;
+                const nbrArret = parseFloat(nbrArretInput.value) || 0;
+                let mttr = '';
+                if (nbrArret > 0) {
+                    mttr = (tempsArret / nbrArret).toFixed(2);
+                }
+                mttrInput.value = mttr;
+            }
+
+            function updateTauxPanne() {
+                const mttr = parseFloat(mttrInput.value) || 0;
+                const mtbf = parseFloat(mtbfInput.value) || 0;
+                let taux = '';
+                if ((mttr + mtbf) > 0) {
+                    taux = (mttr / (mttr + mtbf)).toFixed(4); // 4 décimales, adapte si besoin
+                }
+                document.getElementById('taux_panne').value = taux;
+            }
+
+            function updateDM() {
+                const mtbf = parseFloat(mtbfInput.value) || 0;
+                const mttr = parseFloat(mttrInput.value) || 0;
+                let dm = '';
+                if ((mttr + mtbf) > 0) {
+                    dm = (mtbf / (mttr + mtbf)).toFixed(4); // 4 décimales, adapte si besoin
+                }
+                document.getElementById('DM').value = dm;
+            }
+
+            function updateTRS() {
+                const realise = parseFloat(realiseInput.value) || 0;
+                const prevu = parseFloat(prevuInput.value) || 0;
+                trsInput.value = prevu > 0 ? ((realise / prevu) * 100).toFixed(2) : '';
+            }
+        
+        
+            function updateDS() {
+                const siroperie = parseFloat(siroperieInput.value) || 0;
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                let ds = '';
+                if (tempsRequis > 0) {
+                    ds = (100 - (siroperie / tempsRequis)).toFixed(2);
+                }
+                dsInput.value = ds;
+            }
+        
+            function updateDE() {
+                const utilite = parseFloat(utiliteInput.value) || 0;
+                let de = '';
+                de = (100 - (utilite / 1440)).toFixed(2);
+                deInput.value = de;
+            }
+
+            function updatePertePourcentage() {
+                const perte = parseFloat(perteInput.value) || 0;
+                const realise = parseFloat(realiseInput.value) || 0;
+                let pourcentage = '';
+                if (realise > 0) {
+                    pourcentage = ((perte / realise) * 100).toFixed(2);
+                }
+                pertePourcentageInput.value = pourcentage;
+            }
+
+            function updateHK() {
+                const realise = parseFloat(realiseInput.value) || 0;
+                hkInput.value = ((realise * 2) / 100).toFixed(2);
+            }
+
+            function updateTRG() {
+                const tu = parseFloat(tuInput.value) || 0;
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                const dureeArretProgramme = parseFloat(dureeInput.value) || 0;
+                const denom = tempsRequis + dureeArretProgramme;
+                trgInput.value = denom > 0 ? (tu / denom).toFixed(2) : '';
+            }
+
+            function updateTU() {
+                const realise = parseFloat(realiseInput.value) || 0;
+                const cadence = parseFloat(cadenceInput.value) || 0;
+                tuInput.value = cadence > 0 ? ((realise / cadence) * 60).toFixed(2) : '';
+            }
+
+            function updateTUBIS() {
+                const realise = parseFloat(realiseInput.value) || 0;
+                const cadence = parseFloat(cadenceInput.value) || 0;
+                tubisInput.value = cadence > 0 ? ((realise / cadence) * 60).toFixed(2) : '';
+            }
+
+            function updateTRP() {
+                const tu = parseFloat(tuInput.value) || 0;
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                trpInput.value = tempsRequis > 0 ? (tu / tempsRequis).toFixed(2) : '';
+            }
+
+            function updateTRL() {
+                const tubis = parseFloat(tubisInput.value) || 0;
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                trlInput.value = tempsRequis > 0 ? (tubis / tempsRequis).toFixed(2) : '';
+            }
+
+            function updateTRO() {
+                const tubis = parseFloat(tubisInput.value) || 0;
+                const tempsRequis = parseFloat(tempsRequisInput.value) || 0;
+                const dureeArretProgramme = parseFloat(dureeInput.value) || 0;
+                const denom = tempsRequis + dureeArretProgramme;
+                troInput.value = denom > 0 ? (tubis / denom).toFixed(2) : '';
+            }
+
+            function updateTRE() {
+                const tu = parseFloat(tuInput.value) || 0;
+                treInput.value = (tu / 1440).toFixed(2);
+            }
+        
+            // --- Calcul global ---
+            function updateAllCalculs() {
+                updateTempsRequis();
+                updateMTBF();
+                updateMTTR();
+                updateDS();
+                updateDE();
+                updateTauxPanne();
+                updateDM();
+                updateTRS();
+                updatePertePourcentage(); 
+                updateHK();
+                updateTU();
+                updateTUBIS();
+                updateTRP();
+                updateTRL();
+                updateTRO();
+                updateTRE();
+                updateTRG();
+            }
+        
+            // --- Listeners pour calculs ---
+            dureeInput.addEventListener('input', updateAllCalculs);
+            dureeInput.addEventListener('change', updateAllCalculs);
+            tempsArretInput.addEventListener('input', updateAllCalculs);
+            nbrArretInput.addEventListener('input', updateAllCalculs);
+            cadenceInput.addEventListener('input', updateAllCalculs);
+            tempsRequisInput.addEventListener('input', updateAllCalculs);
+            siroperieInput.addEventListener('input', updateAllCalculs);
+            utiliteInput.addEventListener('input', updateAllCalculs);
+            realiseInput.addEventListener('input', updateAllCalculs);
+        
+            // --- Initialisation ---
+            updateAllCalculs();
+
+            window.afterDataFetch = function() {
+                updateAllCalculs();
+            };
+        });
+        
+        
+
+    </script>
+
+    <script src="{% static 'rouibapp/home.js' %}"></script>
+</body>
+
+</html>

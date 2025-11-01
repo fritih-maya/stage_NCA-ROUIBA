@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width-device-width, initial-scale-1.0">
+    <title>Login -ROUIBA</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/style.css' %}">
+    <script src="{% static 'rouibapp/script.js' %}"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="logo-box">
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" alt="Logo ROUIBA" class="logo-img">
+        </div>
+        <div class="form-box login">
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="Username" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

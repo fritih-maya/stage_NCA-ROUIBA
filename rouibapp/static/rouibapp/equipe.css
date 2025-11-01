@@ -1,0 +1,6 @@
+.logo-rouiba {
+    display: block;
+    margin: 0 auto 5px auto; /* centré + petit espace en bas */
+    width: 100px;            /* largeur du logo */
+    height: auto;            /* garder proportions */
+}

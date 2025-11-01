@@ -1,0 +1,161 @@
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+    font-size: 14px;
+}
+
+.table thead {
+    background: linear-gradient(90deg, #0b3d0b, #228b22);
+    color: white;
+}
+
+.table thead th {
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+}
+
+.table thead th:last-child {
+    border-right: none;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.table tbody tr.selected {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #2196f3;
+}
+
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody td {
+    padding: 12px 10px;
+    color: #333;
+    border-right: 1px solid #f0f0f0;
+    white-space: nowrap;
+}
+
+.table tbody td:last-child {
+    border-right: none;
+}
+
+/* Styles pour les boutons d'action */
+.btn-edit, .btn-delete {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background: #007bff;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Responsive pour le tableau */
+@media (max-width: 768px) {
+    .table-container {
+        margin: 10px;
+        border-radius: 5px;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .table thead th,
+    .table tbody td {
+        padding: 8px 6px;
+    }
+    
+    .btn-edit, .btn-delete {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+/* Scrollbar personnalisée pour le tableau */
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #228b22;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #0b3d0b;
+}
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination-container a {
+    margin: 0 5px;
+    padding: 6px 12px;
+    background-color: #00A896;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination-container .current {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.logo-rouiba {
+    display: block;
+    margin: 0 auto 5px auto; /* centré + petit espace en bas */
+    width: 100px;            /* largeur du logo */
+    height: auto;            /* garder proportions */
+}

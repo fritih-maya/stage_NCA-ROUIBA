@@ -1,0 +1,1234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrêts PET - ROUIBA</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/pet_arret.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        body {
+            background: url("{% static 'rouibapp/back.png' %}") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        .content-header {
+            background: rgba(34, 139, 34, 0.18);
+            padding: 20px 30px;
+            border-radius: 48px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+            margin-bottom: 30px;
+        }
+
+        .content-header h1 {
+            color: #111 !important;
+            font-weight: bold;
+        }
+
+        .btn.btn-outline-secondary {
+            color: #111 !important;
+            border-color: #111 !important;
+            font-weight: bold;
+            background: transparent;
+        }
+
+        .btn.btn-outline-secondary:hover,
+        .btn.btn-outline-secondary:focus {
+            background: #111 !important;
+            color: #fff !important;
+            border-color: #111 !important;
+        }
+
+        .btn-group-custom {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 15px 20px;
+            margin-bottom: 0;
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .btn-group-custom h2 {
+            margin-bottom: 15px;
+            color: #111 !important;
+            font-weight: bold;
+        }
+
+        .btn-group-custom > div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-container {
+            background: rgba(34, 139, 34, 0.18);
+            border-radius: 48px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.65);
+            overflow-x: auto;
+            margin-top: 0;
+            padding: 0 30px 20px 30px;
+        }
+
+        .table {
+            width: 100%;
+            min-width: 2500px;
+            border-collapse: collapse;
+            margin: 20px 0 0 0;
+            font-size: 11px;
+        }
+
+        .table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border: 1px solid #34495e;
+            padding: 8px 4px;
+            text-align: center;
+            vertical-align: middle;
+            min-width: 81px;
+        }
+
+        .table td {
+            border: 1px solid #ddd;
+            padding: 6px 4px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: white;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e3f2fd;
+            cursor: pointer;
+        }
+
+        .table-active {
+            background-color: #cce5ff !important;
+        }
+
+        /* Styles pour les modals en cascade */
+        .modal-dialog {
+            max-width: 900px;
+            margin: 1.75rem auto;
+        }
+        
+        .modal-content {
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 70vh;
+        }
+
+        .modal-footer {
+            flex-shrink: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+            position: sticky;
+            bottom: 0;
+            z-index: 2;
+        }
+
+        .modal-cascade {
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .modal-slide-out {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .modal-slide-in {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .modal-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 10px 15px;
+            margin: 20px -20px 15px -20px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .form-group-small {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-label {
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 12px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+
+        .modal-title {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .modal-counter {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .btn-navigation {
+            min-width: 120px;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 10px 20px;
+        }
+
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            opacity: 1;
+            color: #6c757d;
+        }
+
+        .inherited-field {
+            position: relative;
+        }
+
+        .inherited-field::after {
+            content: "📋";
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 12px;
+        }
+
+        .completion-summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .completion-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .completion-item:last-child {
+            border-bottom: none;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .logo-rouiba {
+            display: block;
+            margin: 0 auto 5px auto;
+            width: 100px;
+            height: auto;
+        }
+
+
+        .alert-empty {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .btn-group-custom {
+                padding: 10px 15px;
+            }
+            
+            .btn-group-custom > div {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .table-container {
+                padding: 0 15px 15px 15px;
+            }
+        }
+
+        .modal-cascade:not(.modal-active) {
+            position: absolute;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+        }
+
+        /* Le modal actif reprend sa position normale */
+        .modal-cascade.modal-active {
+            position: relative;
+            visibility: visible;
+            height: auto;
+        }
+
+        /* Optionnel : améliore le scroll sur mobile */
+        @media (max-width: 768px) {
+            .modal-body {
+                max-height: 60vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="toggleIcon"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" 
+                alt="Logo Rouiba" 
+                class="logo-rouiba">
+            <small>Panel d'administration</small>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+            <li><a href="{% url 'statistiques' %}"><i class="fas fa-chart-bar"></i><span>Statistiques</span></a></li>
+            <li><a href="{% url 'equipe' %}"><i class="fas fa-users"></i><span>Équipes</span></a></li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)">
+                    <i class="fas fa-box"></i><span>Produits</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                   <li><a href="{% url 'carton' %}"><span>Carton</span></a></li>
+                    <li><a href="{% url 'PET' %}" class="active"><span>PET Arrêts</span></a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content" id="mainContent">
+        <div class="content-header">
+             <h1><i class="fas fa-industry"></i> Gestion Arrêt PET</h1>
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'production_pet' %}">
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="fas fa-table"></i> Afficher la table de Production PET
+                    </button>
+                </a>
+                <a href="{% url 'dm_pet' %}">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleDMBtn">
+                        <i class="fas fa-table"></i> Afficher la table DM
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tableau des arrêts -->
+        <div class="container-fluid mt-4">
+            <div class="table-container">
+                <div class="btn-group-custom">
+                    <h2>Liste des Arrêts PET</h2>
+                    <div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ajoutArretModalPET">
+                            <i class="fas fa-plus"></i> Ajouter Arrêt PET
+                        </button>
+                        <button type="button" class="btn btn-primary" id="modifierBtn" style="display: none;" onclick="modifierArretPET()">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button type="button" class="btn btn-danger" id="supprimerBtn" style="display: none;" onclick="supprimerArretPET()">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Ligne</th>
+                            <th>Équipe</th>
+                            <th>Quart</th>
+                            <th>Type</th>
+                            <th>Machine</th>
+                            <th>Durée (min)</th>
+                            <th>Cause</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for arret in arrets %}
+                        <tr onclick="selectionnerLigne(this)" 
+                            data-arret-id="{{ arret.id_arretPET }}"
+                            data-date="{{ arret.date_arret|date:'Y-m-d' }}"
+                            data-ligne-id="{{ arret.ligne.id_ligne }}"
+                            data-equipe-id="{{ arret.equipe.id_equipe }}"
+                            data-quart="{{ arret.quart }}"
+                            data-type-id="{{ arret.type.id_Type }}"
+                            data-machine-id="{{ arret.machine.id_machine }}"
+                            data-duree="{{ arret.duree_arret }}"
+                            data-cause-id="{{ arret.cause.id_cause }}"
+                            data-responsable-id="{{ arret.responsable.id_resp }}"
+                            style="cursor: pointer;">
+                            <td>{{ arret.date_arret|date:"d/m/Y" }}</td>
+                            <td>{{ arret.ligne.nom_ligne }}</td>
+                            <td>{{ arret.equipe.nom }} {{ arret.equipe.prenom }}</td>
+                            <td>{{ arret.quart }}</td>
+                            <td>{{ arret.type.nom_type }}</td>
+                            <td>{{ arret.machine.nom_machine }}</td>
+                            <td>{{ arret.duree_arret }}</td>
+                            <td>{{ arret.cause.nom_cause }}</td>
+                            <td>{{ arret.responsable.nom_resp }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9">
+                                <div class="alert-empty">
+                                    <i class="fas fa-inbox"></i>
+                                    <h5>Aucun arrêt PET enregistré</h5>
+                                    <p class="mb-0">Cliquez sur "Ajouter Arrêt PET" pour commencer</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'ajout -->
+    <div class="modal fade" id="ajoutArretModalPET" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="post" action="{% url 'ajouter_arret_pet' %}" id="formCascade">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-plus-circle"></i> 
+                            <span id="modalTitleText">Ajouter un Arrêt PET</span>
+                            <span class="modal-counter" id="modalCounter">1/8</span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 12.5%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <!-- Formulaire 1 -->
+                        <div class="modal-cascade modal-active" id="modal1">
+                            <div class="section-title">Informations Générales - Configuration Initiale</div>
+                            <div class="form-row">
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Date *</label>
+                                    <input type="date" class="form-control" name="date_arret_1" required>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Ligne *</label>
+                                    <select class="form-control" name="ligne_1" required>
+                                        <option value="">-- Sélectionner une ligne --</option>
+                                        {% for l in lignes %}
+                                        <option value="{{ l.id_ligne }}">{{ l.nom_ligne }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Équipe *</label>
+                                    <select class="form-control" name="equipe_1" required>
+                                        <option value="">-- Sélectionner une équipe --</option>
+                                        {% for e in equipes %}
+                                        <option value="{{ e.id_equipe }}">{{ e.nom }} {{ e.prenom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Quart *</label>
+                                    <select class="form-control" name="quart_1" required>
+                                        <option value="">-- Sélectionner un quart --</option>
+                                        <option value="Matin">Matin</option>
+                                        <option value="Soir">Soir</option>
+                                        <option value="Nuit">Nuit</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="section-title">Détails Techniques - Arrêt #1</div>
+                            <div class="form-row">
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Type *</label>
+                                    <select class="form-control" name="type_1" required>
+                                        <option value="">-- Sélectionner un type --</option>
+                                        {% for t in types %}
+                                        <option value="{{ t.id_Type }}">{{ t.nom_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Machine *</label>
+                                    <select class="form-control" name="machine_1" required>
+                                        <option value="">-- Sélectionner une machine --</option>
+                                        {% for m in machines %}
+                                        <option value="{{ m.id_machine }}">{{ m.nom_machine }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Durée (minutes) *</label>
+                                    <input type="number" class="form-control" name="duree_arret_1" min="0" required placeholder="0">
+                                </div>
+                            </div>
+                            
+                            <div class="section-title">Cause et Responsabilité</div>
+                            <div class="form-row">
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Cause *</label>
+                                    <select class="form-control" name="cause_1" required>
+                                        <option value="">-- Sélectionner une cause --</option>
+                                        {% for c in causes %}
+                                        <option value="{{ c.id_cause }}">{{ c.nom_cause }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Responsable *</label>
+                                    <select class="form-control" name="responsable_1" required>
+                                        <option value="">-- Sélectionner un responsable --</option>
+                                        {% for r in responsables %}
+                                        <option value="{{ r.id_resp }}">{{ r.nom_resp }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulaires 2-8 (similaires avec héritage) -->
+                        {% for i in "2345678" %}
+                        <div class="modal-cascade modal-slide-in" id="modal{{ i }}">
+                            <div class="section-title">Informations Héritées</div>
+                            <div class="form-row">
+                                <div class="form-group-small inherited-field">
+                                    <label class="form-label fw-bold">Date</label>
+                                    <input type="date" class="form-control" name="date_arret_{{ i }}" readonly>
+                                </div>
+                                <div class="form-group-small inherited-field">
+                                    <label class="form-label fw-bold">Ligne</label>
+                                    <select class="form-control" name="ligne_{{ i }}" readonly>
+                                    </select>
+                                </div>
+                                <div class="form-group-small inherited-field">
+                                    <label class="form-label fw-bold">Équipe</label>
+                                    <select class="form-control" name="equipe_{{ i }}" readonly>
+                                    </select>
+                                </div>
+                                <div class="form-group-small inherited-field">
+                                    <label class="form-label fw-bold">Quart</label>
+                                    <select class="form-control" name="quart_{{ i }}" readonly>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="section-title">Détails Techniques - Arrêt #{{ i }}</div>
+                            <div class="form-row">
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Type *</label>
+                                    <select class="form-control" name="type_{{ i }}">
+                                        <option value="">-- Sélectionner un type --</option>
+                                        {% for t in types %}
+                                        <option value="{{ t.id_Type }}">{{ t.nom_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Machine *</label>
+                                    <select class="form-control" name="machine_{{ i }}">
+                                        <option value="">-- Sélectionner une machine --</option>
+                                        {% for m in machines %}
+                                        <option value="{{ m.id_machine }}">{{ m.nom_machine }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Durée (minutes) *</label>
+                                    <input type="number" class="form-control" name="duree_arret_{{ i }}" min="0" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="section-title">Cause et Responsabilité</div>
+                            <div class="form-row">
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Cause *</label>
+                                    <select class="form-control" name="cause_{{ i }}">
+                                        <option value="">-- Sélectionner une cause --</option>
+                                        {% for c in causes %}
+                                        <option value="{{ c.id_cause }}">{{ c.nom_cause }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group-small">
+                                    <label class="form-label fw-bold">Responsable *</label>
+                                    <select class="form-control" name="responsable_{{ i }}">
+                                        <option value="">-- Sélectionner un responsable --</option>
+                                        {% for r in responsables %}
+                                        <option value="{{ r.id_resp }}">{{ r.nom_resp }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {% if i == "8" %}
+                            <div class="completion-summary">
+                                <h4><i class="fas fa-check-circle"></i> Récapitulatif Final</h4>
+                                <p>Vous avez saisi 8 arrêts PET.</p>
+                                <div id="summaryContent"></div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-navigation" id="prevBtn" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> Précédent
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                        <button type="button" class="btn btn-primary btn-navigation" id="nextBtn">
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de modification -->
+    <div class="modal fade" id="modifierArretPetModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form id="formModifierPet" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-edit"></i> Modifier Arrêt PET
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Informations Générales
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Date</label>
+                                <input type="date" id="date_arret_pet_mod" name="date_arret" class="form-control">
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Ligne</label>
+                                <select id="ligne_pet_mod" name="ligne" class="form-control">
+                                    {% for ligne in lignes %}
+                                    <option value="{{ ligne.id_ligne }}">{{ ligne.nom_ligne }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Équipe</label>
+                                <select id="equipe_pet_mod" name="equipe" class="form-control">
+                                    {% for equipe in equipes %}
+                                    <option value="{{ equipe.id_equipe }}">{{ equipe.nom }} {{ equipe.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Quart</label>
+                                <select id="quart_mod" name="quart" class="form-control">
+                                    <option value="Matin">Matin</option>
+                                    <option value="Soir">Soir</option>
+                                    <option value="Nuit">Nuit</option>
+                                </select>
+                            </div>
+                        </div>
+                                
+                        <div class="section-title">
+                            <i class="fas fa-cogs"></i>
+                            Détails Techniques
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Type</label>
+                                <select id="type_pet_mod" name="type" class="form-control">
+                                    {% for type in types %}
+                                    <option value="{{ type.id_Type }}">{{ type.nom_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Machine</label>
+                                <select id="machine_pet_mod" name="machine" class="form-control">
+                                    {% for machine in machines %}
+                                    <option value="{{ machine.id_machine }}">{{ machine.nom_machine }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Durée (min)</label>
+                                <input type="number" id="duree_arret_pet_mod" name="duree_arret" class="form-control" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">
+                            <i class="fas fa-clipboard-list"></i>
+                            Cause et Responsabilité
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Cause</label>
+                                <select id="cause_pet_mod" name="cause" class="form-control">
+                                    {% for cause in causes %}
+                                    <option value="{{ cause.id_cause }}">{{ cause.nom_cause }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group-small">
+                                <label class="form-label fw-bold">Responsable</label>
+                                <select id="responsable_pet_mod" name="responsable" class="form-control">
+                                    {% for resp in responsables %}
+                                    <option value="{{ resp.id_resp }}">{{ resp.nom_resp }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Fermer
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script>
+        class ModalCascade {
+            constructor() {
+                this.currentModal = 1;
+                this.totalModals = 8;
+                this.inheritedData = {};
+                this.filledModals = new Set([1]);
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateUI();
+                console.log('ModalCascade initialized');
+            }
+
+            bindEvents() {
+                const nextBtn = document.getElementById('nextBtn');
+                const prevBtn = document.getElementById('prevBtn');
+
+                if (nextBtn) nextBtn.addEventListener('click', () => this.nextModal());
+                if (prevBtn) prevBtn.addEventListener('click', () => this.prevModal());
+                
+                // Listen to changes in first form - CORRECTION: noms corrects pour PET
+                ['date_arret_1', 'ligne_1', 'equipe_1', 'quart_1'].forEach(field => {
+                    const element = document.querySelector(`[name="${field}"]`);
+                    if (element) {
+                        element.addEventListener('change', () => this.updateInheritedData());
+                    }
+                });
+            }
+
+            updateInheritedData() {
+                const form = document.getElementById('modal1');
+
+                this.inheritedData = {
+                    date: form.querySelector('[name="date_arret_1"]').value,
+                    ligne: form.querySelector('[name="ligne_1"]').value,
+                    equipe: form.querySelector('[name="equipe_1"]').value,
+                    quart: form.querySelector('[name="quart_1"]').value
+                };
+
+                console.log('Inherited data updated:', this.inheritedData);
+
+                // Update all following forms
+                for (let i = 2; i <= 8; i++) {
+                    this.populateInheritedFields(i);
+                }
+            }
+
+        populateInheritedFields(modalNumber) {
+            const modal = document.getElementById(`modal${modalNumber}`);
+            if (!modal) return;
+        
+            Object.keys(this.inheritedData).forEach(field => {
+                const element = modal.querySelector(`[name="${field}_${modalNumber}"]`);
+                if (element) {
+                    // Pour les <select>, copie les options du formulaire principal
+                    if (element.tagName === 'SELECT') {
+                        const sourceSelect = document.querySelector(`[name="${field}_1"]`);
+                        if (sourceSelect) {
+                            element.innerHTML = sourceSelect.innerHTML; // Copie toutes les options
+                            element.value = this.inheritedData[field];  // Sélectionne la bonne valeur
+                        }
+                    } else {
+                        // Pour les <input>, juste la valeur
+                        element.value = this.inheritedData[field] || '';
+                    }
+                }
+            });
+        }
+
+            nextModal() {
+                if (this.currentModal < this.totalModals) {
+                    if (this.validateCurrentForm()) {
+                        this.filledModals.add(this.currentModal);
+                        this.animateToNext();
+                    }
+                }
+            }
+
+            prevModal() {
+                if (this.currentModal > 1) {
+                    this.animateToPrevious();
+                }
+            }
+
+            validateCurrentForm() {
+                const currentForm = document.getElementById(`modal${this.currentModal}`);
+                if (!currentForm) return true;
+
+                const requiredFields = currentForm.querySelectorAll('[required]:not([disabled]):not([readonly])');
+                let isValid = true;
+                const missingFields = [];
+
+                requiredFields.forEach(field => {
+                    if (!field.value || field.value.trim() === '') {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        const label = field.closest('.form-group-small')?.querySelector('label');
+                        if (label) {
+                            missingFields.push(label.textContent.replace(' *', ''));
+                        }
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    const errorMsg = missingFields.length > 0 
+                        ? `Champs requis : ${missingFields.join(', ')}`
+                        : 'Veuillez remplir tous les champs obligatoires.';
+                    this.showAlert(errorMsg, 'warning');
+                }
+
+                return isValid;
+            }
+
+            animateToNext() {
+                const current = document.getElementById(`modal${this.currentModal}`);
+                const next = document.getElementById(`modal${this.currentModal + 1}`);
+
+                if (!current || !next) return;
+
+                current.classList.add('modal-slide-out');
+                current.classList.remove('modal-active');
+
+                setTimeout(() => {
+                    current.style.display = 'none';
+                    next.style.display = 'block';
+                    next.classList.remove('modal-slide-in');
+                    next.classList.add('modal-active');
+                    
+                    this.currentModal++;
+                    this.updateUI();
+                    this.updateInheritedData();
+                    
+                    if (this.currentModal === this.totalModals) {
+                        this.generateSummary();
+                    }
+                }, 200);
+            }
+
+            animateToPrevious() {
+                const current = document.getElementById(`modal${this.currentModal}`);
+                const prev = document.getElementById(`modal${this.currentModal - 1}`);
+
+                if (!current || !prev) return;
+
+                current.classList.add('modal-slide-in');
+                current.classList.remove('modal-active');
+
+                setTimeout(() => {
+                    current.style.display = 'none';
+                    prev.style.display = 'block';
+                    prev.classList.remove('modal-slide-out');
+                    prev.classList.add('modal-active');
+                    
+                    this.currentModal--;
+                    this.updateUI();
+                }, 200);
+            }
+
+            updateUI() {
+                const isRecap = this.currentModal === this.totalModals;
+                
+                const titleElement = document.getElementById('modalTitleText');
+                const counterElement = document.getElementById('modalCounter');
+                const progressElement = document.getElementById('progressBar');
+
+                if (titleElement) {
+                    titleElement.textContent = isRecap ? 'Récapitulatif et Confirmation' : 'Ajouter un Arrêt PET';
+                }
+                
+                if (counterElement) {
+                    counterElement.textContent = `${this.currentModal}/${this.totalModals}`;
+                }
+
+                const progress = (this.currentModal / this.totalModals) * 100;
+                if (progressElement) {
+                    progressElement.style.width = `${progress}%`;
+                }
+
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+
+                if (prevBtn) {
+                    prevBtn.style.display = this.currentModal > 1 ? 'block' : 'none';
+                }
+
+                if (this.currentModal === this.totalModals) {
+                    if (nextBtn) nextBtn.style.display = 'none';
+                } else {
+                    if (nextBtn) {
+                        nextBtn.style.display = 'block';
+                        nextBtn.innerHTML = 'Suivant <i class="fas fa-arrow-right"></i>';
+                    }
+                }
+            }
+
+            generateSummary() {
+                const summaryContent = document.getElementById('summaryContent');
+                if (!summaryContent) return;
+
+                const filledCount = this.filledModals.size;
+                
+                const ligneSelect = document.querySelector('[name="ligne_1"]');
+                const equipeSelect = document.querySelector('[name="equipe_1"]');
+                
+                const ligneText = ligneSelect ? ligneSelect.options[ligneSelect.selectedIndex]?.text || 'Non sélectionnée' : 'Non sélectionnée';
+                const equipeText = equipeSelect ? equipeSelect.options[equipeSelect.selectedIndex]?.text || 'Non sélectionnée' : 'Non sélectionnée';
+                
+                const inheritedInfo = `
+                    <div class="completion-item">
+                        <strong>Date :</strong> <span>${this.inheritedData.date || 'Non définie'}</span>
+                    </div>
+                    <div class="completion-item">
+                        <strong>Ligne :</strong> <span>${ligneText}</span>
+                    </div>
+                    <div class="completion-item">
+                        <strong>Équipe :</strong> <span>${equipeText}</span>
+                    </div>
+                    <div class="completion-item">
+                        <strong>Quart :</strong> <span>${this.inheritedData.quart || 'Non défini'}</span>
+                    </div>
+                    <div class="completion-item">
+                        <strong>Arrêts configurés :</strong> <span>${filledCount} sur ${this.totalModals}</span>
+                    </div>
+                `;
+                
+                summaryContent.innerHTML = inheritedInfo;
+            }
+
+            ensureInheritedFieldsForSubmission() {
+                for (let i = 2; i <= 8; i++) {
+                    Object.keys(this.inheritedData).forEach(field => {
+                        const element = document.querySelector(`[name="${field}_${i}"]`);
+                        if (element && this.inheritedData[field]) {
+                            element.value = this.inheritedData[field];
+                            element.removeAttribute('readonly');
+                            element.removeAttribute('disabled');
+                        }
+                    });
+                }
+            }
+
+            reset() {
+                this.currentModal = 1;
+                this.inheritedData = {};
+                this.filledModals = new Set([1]);
+                
+                for (let i = 1; i <= this.totalModals; i++) {
+                    const modal = document.getElementById(`modal${i}`);
+                    
+                    if (modal) {
+                        if (i === 1) {
+                            modal.classList.add('modal-active');
+                            modal.classList.remove('modal-slide-out', 'modal-slide-in');
+                            modal.style.display = 'block';
+                        } else {
+                            modal.classList.remove('modal-active');
+                            modal.classList.add('modal-slide-in');
+                            modal.style.display = 'none';
+                        }
+                    }
+                }
+                
+                this.updateUI();
+                console.log('ModalCascade reset');
+            }
+
+            showAlert(message, type = 'info') {
+                const existingAlerts = document.querySelectorAll('.position-fixed.alert');
+                existingAlerts.forEach(alert => alert.remove());
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 5000);
+            }
+        }
+
+        // Global instance variable
+        let modalCascadeInstance = null;
+        let ligneSelectionnee = null;
+        let idArretSelectionne = null;
+
+        // Fonction pour sélectionner une ligne
+        function selectionnerLigne(ligne) {
+            if (ligneSelectionnee) {
+                ligneSelectionnee.classList.remove('table-active');
+            }
+            
+            ligne.classList.add('table-active');
+            ligneSelectionnee = ligne;
+            idArretSelectionne = ligne.dataset.arretId;
+
+            document.getElementById('modifierBtn').style.display = 'inline-block';
+            document.getElementById('supprimerBtn').style.display = 'inline-block';
+            
+            console.log('Arrêt PET sélectionné:', idArretSelectionne);
+        }
+
+        // Fonction pour modifier un arrêt PET
+        function modifierArretPET() {
+            if (!idArretSelectionne) {
+                alert('Veuillez sélectionner un arrêt à modifier.');
+                return;
+            }
+
+            try {
+                const data = ligneSelectionnee.dataset;
+                
+                document.getElementById('date_arret_pet_mod').value = data.date || '';
+                document.getElementById('ligne_pet_mod').value = data.ligneId || '';
+                document.getElementById('equipe_pet_mod').value = data.equipeId || '';
+                document.getElementById('quart_mod').value = data.quart || '';
+                document.getElementById('type_pet_mod').value = data.typeId || '';
+                document.getElementById('machine_pet_mod').value = data.machineId || '';
+                document.getElementById('duree_arret_pet_mod').value = data.duree || '';
+                document.getElementById('cause_pet_mod').value = data.causeId || '';
+                document.getElementById('responsable_pet_mod').value = data.responsableId || '';
+
+                document.getElementById('formModifierPet').action = `/PET_arret/modifier_arret_pet/${idArretSelectionne}/`;
+                
+                const modal = new bootstrap.Modal(document.getElementById('modifierArretPetModal'));
+                modal.show();
+                
+            } catch (error) {
+                console.error('Erreur lors de la modification:', error);
+                alert('Erreur lors de la préparation de la modification.');
+            }
+        }
+
+        // Fonction pour supprimer un arrêt PET
+        function supprimerArretPET() {
+            if (!idArretSelectionne) {
+                alert('Veuillez sélectionner un arrêt à supprimer.');
+                return;
+            }
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet arrêt PET ? Cette action est irréversible.')) {
+                window.location.href = `/PET_arret/supprimer_arret_pet/${idArretSelectionne}/`;
+            }
+        }
+
+        // Fonction d'export Excel
+        function exportToExcel() {
+            window.location.href = "{% url 'export_arrets_pet_excel' %}";
+        }
+
+        // Fonctions pour la sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        }
+
+        function toggleSubmenu(event) {
+            event.preventDefault();
+            const submenu = event.target.closest('li').querySelector('.submenu');
+            const arrow = event.target.closest('a').querySelector('.submenu-arrow');
+            
+            if (submenu && arrow) {
+                if (submenu.style.display === 'block') {
+                    submenu.style.display = 'none';
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    submenu.style.display = 'block';
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+
+        // Initialize modal cascade on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            modalCascadeInstance = new ModalCascade();
+            
+            // Reset modal when it closes
+            const modalElement = document.getElementById('ajoutArretModalPET');
+            if (modalElement) {
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    if (modalCascadeInstance) {
+                        modalCascadeInstance.reset();
+                    }
+                });
+            }
+
+            // Ensure inherited fields are submitted before form submission
+            const form = document.getElementById('formCascade');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    if (modalCascadeInstance) {
+                        modalCascadeInstance.ensureInheritedFieldsForSubmission();
+                        
+                        console.log('=== SOUMISSION FORMULAIRE PET ===');
+                        const formData = new FormData(form);
+                        for (let [key, value] of formData.entries()) {
+                            console.log(`${key}: "${value}"`);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script src="{% static 'rouibapp/home.js' %}"></script>
+</body>
+</html>

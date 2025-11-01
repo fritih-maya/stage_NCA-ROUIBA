@@ -1,0 +1,428 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ROUIBA</title>
+    <link rel="stylesheet" href="{% static 'rouibapp/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{% static 'rouibapp/home.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+       body {
+            background: url("{% static 'rouibapp/back.png' %}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+        .main-content {
+            background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .content-body {
+            background: rgba(255, 255, 255, 0.18); /* blanc transparent */
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px auto;
+            padding: 0 20px;
+            justify-content: center;
+            align-items: center;
+            width: 80%; /* Ajuste la largeur selon tes besoins */
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            font-family: Arial, sans-serif;
+            min-width: 200px;
+            max-width: 350px;
+            min-height: 180px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .trs-card {
+            border: 2px solid #e9ecef;
+            min-height: 100px;
+        }
+        .stat-header {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 20px;
+            color: #000000;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .stat-values {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            justify-content: space-between;
+        }
+        .value-label {
+            font-size: 18px;
+            color: #999;
+            font-weight: bold;
+            width: 50px;
+            flex-shrink: 0;
+        }
+        .value-box {
+            color: white;
+            padding: 4px 8px;
+            font-size: 19px;
+            font-weight: bold;
+            min-width: 100px;
+            max-width: 200px;   /* ← optionnel, limite la largeur maximale */
+            width: 100%;
+            text-align: center;
+            border-radius: 3px;
+        }
+        .planifie-box {
+            background-color: #FF8C42;
+        }
+        .realise-box {
+            background-color: #f36e1b;
+            color: #fff;
+        }
+        .trs-box {
+            background-color: #1f77e4;
+            color: #fff;
+            font-size: 18px !important;
+            padding: 8px 12px;
+        }
+        .performance-green {
+            display: flex;
+            align-items: center;
+            background-color: #d4edda;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #155724;
+            width: fit-content;
+            margin-top: 10px;
+        }
+        .performance-red {
+            display: flex;
+            align-items: center;
+            background-color: #f8d7da;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #a71d2a;
+            width: fit-content;
+            margin-top: 10px;
+        }
+        .performance i {
+            color: #28a745;
+            margin-right: 5px;
+            font-size: 20px;
+        }
+        .chart-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 15px auto;
+        }
+        .chart-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #155724;
+            text-align: center;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 0 10px;
+            }
+        }
+        .center-green {
+            color: #55c16e !important;
+        }
+        .center-red {
+            color: #e74c3c !important;
+        }
+        .date-form .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(34%) sepia(98%) saturate(747%) hue-rotate(184deg) brightness(92%) contrast(92%);
+        }
+        .date-form .btn-primary {
+            background: linear-gradient(135deg, #FF8C42, #FF6B35);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .date-form .btn-primary:hover {
+            background: linear-gradient(135deg, #FF6B35, #FF5722);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+        .btn-outline-secondary {
+            background: linear-gradient(135deg, #FF8C42, #FF6B35);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-secondary:hover {
+            background: linear-gradient(135deg,  #FF6B35, #FF5722);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        } 
+        
+        
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="toggleIcon"></i>
+    </button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'rouibapp/Logo_Rouiba.png' %}" 
+                alt="Logo Rouiba" 
+                class="logo-rouiba">
+            <small>Panel d'administration</small>
+        </div>
+        <ul class="nav-menu">
+            <li>
+                <a href="{% url 'home' %}" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'statistiques' %}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'equipe' %}">
+                    <i class="fas fa-users"></i>
+                    <span>Équipes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)">
+                    <i class="fas fa-box"></i>
+                    <span>Produits</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{% url 'carton' %}"><span>Carton</span></a></li>
+                    <li><a href="{% url 'PET' %}"><span>PET</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content" id="mainContent">
+        <div class="content-header" >
+            <img src="{% static 'rouibapp/jus.png' %}" alt="Jus" class="header-img">
+        </div>
+        <form method="get" class="date-form" style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+            <label for="date" style="font-weight: bold; font-size: 16px; margin-right: 8px;">
+                Sélectionnez une date :
+            </label>
+            <input type="date" id="date" name="date" value="{{ date|default_if_none:'' }}"
+                class="form-control"
+                style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 16px;">
+            <button type="submit" class="btn btn-primary" style="padding: 6px 18px; border-radius: 6px; font-size: 16px;">
+                Afficher
+            </button>
+        </form>
+
+
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'home' %}">
+                <button type="button" class="btn btn-outline-secondary" id="toggleTableBtn">
+                    <i class="fas fa-table"></i> Afficher le dashboard Carton
+                </button>
+            </a>
+
+        </div>
+
+        <div class="content-body">
+            <h1>Dashboard Pet</h1>
+            <!-- Cartes de production PET -->
+            <div class="stats-container">
+                {% for stat in stats_pet %}
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-label">Ligne {{ stat.ligne }}</div>
+                    </div>
+                    <div class="stat-values">
+                        <div class="stat-row">
+                            <div class="value-label">Planifié</div>
+                            <div class="value-box planifie-box">{{ stat.planifie|intcomma }}</div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="value-label">Réalisé</div>
+                            <div class="value-box realise-box">{{ stat.realise|intcomma }}</div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="value-label">Pertes</div>
+                            <div class="value-box" style="background:#e74c3c;">
+                                {{ stat.perte|intcomma }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="performance {% if stat.performance >= 70 %}performance-green{% else %}performance-red{% endif %}">
+                        <i  style="color: {% if stat.performance >= 70 %}#55c16e{% else %}#e74c3c{% endif %};"></i>
+                        <span>{{ stat.performance }}%</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        
+            <!-- Cartes TRG PET avec donut charts -->
+            <div class="stats-container">
+                {% for stat in stats_pet %}
+                <div class="stat-card trs-card">
+                    <div class="stat-header">
+                        <div class="stat-label">TRG Ligne {{ stat.ligne }}</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trgPetDonutChart{{ forloop.counter }}" width="120" height="120"></canvas>
+                        <div class="chart-center-text {% if stat.trg >= 70 %}center-green{% else %}center-red{% endif %}">
+                            {{ stat.trg }}%
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Cartes TRS PET avec donut charts -->
+            <div class="stats-container">
+                {% for stat in stats_pet %}
+                <div class="stat-card trs-card">
+                    <div class="stat-header">
+                        <div class="stat-label">TRS Ligne {{ stat.ligne }}</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trsPetDonutChart{{ forloop.counter }}" width="120" height="120"></canvas>
+                        <div class="chart-center-text {% if stat.trs >= 70 %}center-green{% else %}center-red{% endif %}">
+                            {{ stat.trs }}%
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Donut charts TRS PET
+        {% for stat in stats_pet %}
+        (function() {
+            const ctxTrsPet{{ forloop.counter }} = document.getElementById('trsPetDonutChart{{ forloop.counter }}').getContext('2d');
+            const trsValuePet = {{ stat.trs }};
+            const remainingValuePet = 100 - trsValuePet;
+            const trsColor = trsValuePet >= 70 ? '#55c16e' : '#e74c3c'; // vert ou rouge
+        
+            new Chart(ctxTrsPet{{ forloop.counter }}, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [trsValuePet, remainingValuePet],
+                        backgroundColor: [
+                            trsColor,
+                            '#e9ecef'
+                        ],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    events: []
+                }
+            });
+        })();
+        {% endfor %}
+
+        // Donut charts TRG PET
+        {% for stat in stats_pet %}
+        (function() {
+            const ctxTrgPet{{ forloop.counter }} = document.getElementById('trgPetDonutChart{{ forloop.counter }}').getContext('2d');
+            const trgValuePet = {{ stat.trg }};
+            const trgRemainingPet = 100 - trgValuePet;
+            const trgColor = trgValuePet >= 70 ? '#e4b21f' : '#e74c3c'; // jaune ou rouge
+        
+            new Chart(ctxTrgPet{{ forloop.counter }}, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [trgValuePet, trgRemainingPet],
+                        backgroundColor: [
+                            trgColor,
+                            '#e9ecef'
+                        ],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    events: []
+                }
+            });
+        })();
+        {% endfor %}
+    </script>
+
+    <script src="{% static 'rouibapp/home.js' %}"></script>
+</body>
+</html>
