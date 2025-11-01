@@ -1,7 +1,7 @@
 # 🧩 Projet Django - Stage NCA ROUIBA
 
 Ce dépôt contient le code source du projet **Django** développé dans le cadre du stage à la société **NCA Rouiba**.  
-Le projet repose sur **Django + MySQL**, et peut inclure des fonctionnalités d'analyse de données, d'API REST et d'intelligence artificielle.
+Le projet repose sur **Django + MySQL**.
 
 ---
 
@@ -105,6 +105,5 @@ Le projet sera accessible à l’adresse :
 
 ## 👩‍💻 Auteurs
 **Maya Fritih** et **Souheil BENAMAR** 
-Projet développé dans le cadre du **stage de fin d’études à NCA Rouiba**.
 
 ---
